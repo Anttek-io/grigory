@@ -13,6 +13,17 @@ import os
 from pathlib import Path
 
 import dj_database_url
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+def getenv(key, default=None):
+    value = os.getenv(key, default)
+    if value in ('', None):
+        return default
+    return value
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,17 +33,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-0@=b%$ru-1i&(sc@thp8r&h$4c!6%y#qr^v=wcybcf)u7-=a*&')
+SECRET_KEY = getenv('DJANGO_SECRET_KEY', 'django-insecure-0@=b%$ru-1i&(sc@thp8r&h$4c!6%y#qr^v=wcybcf)u7-=a*&')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DJANGO_DEBUG', True)
+DEBUG = getenv('DJANGO_DEBUG', True)
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost'
 ]
 
-EXTRA_ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', None)
+EXTRA_ALLOWED_HOSTS = getenv('DJANGO_ALLOWED_HOSTS', None)
 
 if EXTRA_ALLOWED_HOSTS:
     assert isinstance(EXTRA_ALLOWED_HOSTS.split(','), list)
@@ -91,9 +102,6 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
-
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -124,9 +132,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = os.getenv('DJANGO_LANGUAGE_CODE', 'en')
+LANGUAGE_CODE = getenv('DJANGO_LANGUAGE_CODE', 'en')
 
-TIME_ZONE = os.getenv('TZ', 'UTC')
+TIME_ZONE = getenv('DJANGO_TIME_ZONE', 'UTC')
 
 USE_I18N = True
 
@@ -160,7 +168,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Redis settings
 
-REDIS_URL = os.getenv('REDIS_URL')
+REDIS_URL = getenv('REDIS_URL')
 
 BROKER_URL = f'{REDIS_URL}/0'
 

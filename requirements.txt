@@ -1,8 +1,10 @@
 # Python
-python-dotenv
+python-dotenv~=1.0.0
 
 # Django
-Django
+#  Django 4.2 is throwing warnings:
+#  "StreamingHttpResponse must consume synchronous iterators in order to serve them asynchronously. ..."
+Django==4.1
 django-rest-framework
 
 # Database
@@ -14,11 +16,14 @@ django-cors-headers
 
 # Deployment
 gunicorn
-uvicorn[standard]
+uvicorn[standard]~=0.21.1
 whitenoise
 
 # Distributed async tasks
-celery
+celery~=5.2.7
 redis
 django-celery-beat
 django-celery-results
+
+# Channels
+channels
