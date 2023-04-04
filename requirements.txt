@@ -1,0 +1,22 @@
+# Python
+dotenv
+
+# Django
+Django
+django-rest-framework
+
+# Database
+psycopg2-binary
+dj_database_url
+
+# Security
+django-cors-headers
+
+# Deployment
+gunicorn
+whitenoise
+
+# Distributed asynchronous task queue
+celery
+django-celery-beat
+django-celery-results
