@@ -2,9 +2,13 @@ __pycache__
 *.pyc
 
 venv
+
 static
-media
+/media/
+
 db.sqlite3
+
+!docs/
 
 .idea
 
