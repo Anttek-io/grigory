@@ -7,3 +7,5 @@ media
 db.sqlite3
 
 .idea
+
+.env

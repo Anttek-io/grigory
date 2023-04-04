@@ -1,0 +1,16 @@
+services:
+  django:
+    build:
+      context: .
+    ports:
+      - "${DJANGO_WEB_PORT:-}:8000"
+    volumes:
+      - .:/home/django
+  celery:
+    command: celery -A core worker -l debug --concurrency 1 -P solo -E
+    volumes:
+      - .:/home/django
+  celery-beat:
+    command: celery -A core beat -l debug
+    volumes:
+      - .:/home/django

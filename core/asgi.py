@@ -10,7 +10,12 @@ https://docs.djangoproject.com/en/4.1/howto/deployment/asgi/
 import os
 
 from django.core.asgi import get_asgi_application
+from uvicorn.workers import UvicornWorker as BaseUvicornWorker
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 
 application = get_asgi_application()
+
+
+class UvicornWorker(BaseUvicornWorker):
+    CONFIG_KWARGS = {"lifespan": "off"}

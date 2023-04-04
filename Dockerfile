@@ -1,5 +1,7 @@
 FROM python:3.10-slim-bullseye as base
 
+SHELL ["/bin/bash", "-c"]
+
 
 FROM base as builder
 
@@ -12,15 +14,13 @@ RUN python -m venv /venv && \
 
 FROM base
 
+WORKDIR /home/django
+
 COPY --from=builder /venv /venv
 
 ENV PATH="/venv/bin:$PATH"
 
 ENV PYTHONUNBUFFERED 1
-
-ARG CACHE_DATE=not_a_date
-
-RUN echo $CACHE_DATE
 
 COPY . .
 
@@ -28,6 +28,6 @@ RUN chmod +x /home/django/entrypoint.sh
 
 ENTRYPOINT ["/home/django/entrypoint.sh"]
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["uvicorn", "core.asgi:application", "--host", "0.0.0.0", "--port", "8000", "--reload", "--lifespan", "off"]
 
 EXPOSE 8000

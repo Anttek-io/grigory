@@ -1,0 +1,100 @@
+version: '3.9'
+
+
+x-environment: &environment
+  DJANGO_DEBUG: ${DJANGO_DEBUG:-True}
+  DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-}
+  DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-}
+  DJANGO_LANGUAGE_CODE: ${DJANGO_LANGUAGE_CODE:-}
+  REDIS_URL: redis://redis:6379
+  DATABASE_URL: postgres://grigory:grigory@postgres:5432/grigory
+  TZ: ${TZ:-}
+
+
+services:
+  redis:
+    image: redis:alpine
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+  postgres:
+    image: postgres:12
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    environment:
+      - POSTGRES_DB=grigory
+      - POSTGRES_USER=grigory
+      - POSTGRES_PASSWORD=grigory
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+  django:
+    image: harleyking/grigory:${TAG:-latest}
+    command: gunicorn
+    depends_on:
+      - redis
+      - postgres
+    deploy:
+      replicas: 1
+      restart_policy:
+          condition: on-failure
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    environment: *environment
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  celery:
+    image: harleyking/grigory:${TAG:-latest}
+    command: celery -A core worker -l debug --concurrency 1 -P solo -E
+    depends_on:
+      - django
+    deploy:
+      replicas: 1
+      restart_policy:
+          condition: on-failure
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    entrypoint: []
+    environment: *environment
+    healthcheck:
+      test: ["CMD", "celery", "-A", "core", "inspect", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  celery-beat:
+    image: harleyking/grigory:${TAG:-latest}
+    command: celery -A core beat -l debug
+    depends_on:
+      - django
+    deploy:
+      replicas: 1
+      restart_policy:
+          condition: on-failure
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    entrypoint: []
+    environment: *environment
+
+
+volumes:
+  postgres_data:

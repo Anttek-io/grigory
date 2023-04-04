@@ -1,5 +1,5 @@
 # Python
-dotenv
+python-dotenv
 
 # Django
 Django
@@ -14,9 +14,11 @@ django-cors-headers
 
 # Deployment
 gunicorn
+uvicorn[standard]
 whitenoise
 
-# Distributed asynchronous task queue
+# Distributed async tasks
 celery
+redis
 django-celery-beat
 django-celery-results
