@@ -5,7 +5,9 @@ import multiprocessing
 
 wsgi_app = 'core.asgi:application'
 
-log_file = '-'
+log_level = 'info'
+
+accesslog = '-'
 
 workers = multiprocessing.cpu_count() + 1
 

@@ -20,8 +20,12 @@ load_dotenv()
 
 def getenv(key, default=None):
     value = os.getenv(key, default)
-    if value in ('', None):
+    if value == '':
         return default
+    if value == 'True':
+        return True
+    if value == 'False':
+        return False
     return value
 
 
@@ -61,7 +65,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third party apps
-    'whitenoise.runserver_nostatic',
     'django_celery_beat',
     'django_celery_results',
     'rest_framework',
