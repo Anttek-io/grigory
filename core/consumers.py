@@ -1,8 +1,8 @@
-from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 
 
-class AsyncHealthCheckConsumer(AsyncJsonWebsocketConsumer):
+class AsyncHealthCheckConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
-        await self.send_json({'status': 'ok'})
+        await self.send('ok')
         await self.close()
