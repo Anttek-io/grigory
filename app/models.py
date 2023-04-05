@@ -3,6 +3,15 @@ from django.utils.translation import gettext_lazy as _
 from django.core.serializers.json import DjangoJSONEncoder
 
 
+class BaseMessage(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True)
+    text = models.TextField()
+    sender_id = models.JSONField(encoder=DjangoJSONEncoder)
+
+    class Meta:
+        abstract = True
+
+
 class Chat(models.Model):
     chat_type_choices = (
         ('private', _('Private')),
@@ -22,13 +31,9 @@ class Chat(models.Model):
         return str(self.id)
 
 
-class Message(models.Model):
-    timestamp = models.DateTimeField(auto_now_add=True)
+class Message(BaseMessage):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='messages')
-    sender_id = models.JSONField(encoder=DjangoJSONEncoder)
-
-    text = models.TextField()
-    who_read = models.JSONField(encoder=DjangoJSONEncoder, default=list)
+    who_seen = models.JSONField(encoder=DjangoJSONEncoder, default=list)
 
     class Meta:
         verbose_name = _('Message')
@@ -36,8 +41,8 @@ class Message(models.Model):
         ordering = ('-timestamp',)
 
     @property
-    def read(self):
-        return len(self.who_read) > 0
+    def seen(self):
+        return len(self.who_seen) > 0
 
     def __str__(self):
         return str(self.id)
