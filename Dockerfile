@@ -28,6 +28,6 @@ RUN chmod +x /home/django/entrypoint.sh
 
 ENTRYPOINT ["/home/django/entrypoint.sh"]
 
-CMD ["uvicorn", "core.asgi:application", "--host", "0.0.0.0", "--port", "8000", "--reload", "--lifespan", "off"]
+CMD ["gunicorn"]
 
 EXPOSE 8000

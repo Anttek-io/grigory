@@ -27,3 +27,4 @@ django-celery-results
 
 # Channels
 channels
+channels_redis

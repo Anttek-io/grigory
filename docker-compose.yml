@@ -33,7 +33,6 @@ services:
       - postgres_data:/var/lib/postgresql/data/
   django:
     image: harleyking/grigory:${TAG:-latest}
-    command: gunicorn
     depends_on:
       - redis
       - postgres
