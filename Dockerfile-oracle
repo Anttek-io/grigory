@@ -21,10 +21,10 @@ FROM base as builder
 
 COPY requirements.txt .
 
-RUN echo "cx_Oracle==8.3.0" >> requirements.txt && \
-    python -m venv /venv && \
+RUN python -m venv /venv && \
     source /venv/bin/activate && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir cx_Oracle==8.3.0
 
 
 FROM base
