@@ -7,7 +7,7 @@
 
 - [x] Expiring Token authentication
 - [x] WebSockets with Token authentication
-- [x] Microservice architecture-ready (with [MS DB Router](https://github.com/dj-ms/dj-ms-auth-router))
+- [x] Microservice architecture-ready (with [DJ-MS Auth Router](https://github.com/dj-ms/dj-ms-auth-router))
 
 
 ### Features to be implemented
