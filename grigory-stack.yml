@@ -50,7 +50,14 @@ services:
         - "traefik.http.services.${STACK_NAME}.loadbalancer.server.port=8000"
         - "traefik.docker.network=traefik_default"
     environment: *environment
+    healthcheck:
+      test: curl -f http://localhost:8000/health || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
     networks:
+      - default
       - traefik_default
   celery:
     image: harleyking/grigory:${TAG:-latest}
