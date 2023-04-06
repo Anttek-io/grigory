@@ -1,6 +1,12 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.serializers.json import DjangoJSONEncoder
+from channels.layers import get_channel_layer
+from channels.db import database_sync_to_async
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
 
 
 class BaseMessage(models.Model):
@@ -10,6 +16,13 @@ class BaseMessage(models.Model):
 
     class Meta:
         abstract = True
+
+    @property
+    def sender(self):
+        try:
+            return User.objects.get(id=self.sender_id)
+        except User.DoesNotExist:
+            return None
 
 
 class Chat(models.Model):
@@ -46,3 +59,25 @@ class Message(BaseMessage):
 
     def __str__(self):
         return str(self.id)
+
+    async def send_to_websocket(self, *args, **kwargs):
+        channel_layer = get_channel_layer()
+        try:
+            user = await database_sync_to_async(User.objects.get)(id=self.sender_id)
+        except User.DoesNotExist:
+            return
+        await channel_layer.group_send(
+            self.chat.slug,
+            {
+                'type': 'chat_message',
+                'sender': {
+                    'id': user.id,
+                    'username': user.username,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name
+                },
+                'message': self.text,
+                'timestamp': self.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            }
+        )
+

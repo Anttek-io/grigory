@@ -1,8 +1,8 @@
-from django.urls import path
 from channels.routing import URLRouter
+from django.urls import re_path
 
 from app.consumers.base import ChatConsumer
 
 root_routing = URLRouter([
-    path('chat', ChatConsumer.as_asgi()),
+    re_path(r'^chat$', ChatConsumer.as_asgi()),
 ])

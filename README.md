@@ -3,10 +3,11 @@
 ![screenshot](docs/media/scheme.png)
 
 
+### Features implemented
 
-
-
-
+- [x] Expiring Token authentication
+- [x] WebSockets with Token authentication
+- [x] Microservice architecture-ready (with [MS DB Router](https://github.com/dj-ms/dj-ms-auth-router))
 
 
 
