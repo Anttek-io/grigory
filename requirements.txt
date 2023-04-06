@@ -2,12 +2,12 @@
 python-dotenv~=1.0.0
 
 # Django
-Django==4.1
+Django==3.2
 djangorestframework
 django-filter
 
 # Microservices
-dj-ms-auth-router==1.4.0
+dj-ms-auth-router==1.5.0
 
 # Database
 psycopg2-binary
