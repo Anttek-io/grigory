@@ -16,7 +16,7 @@ from django.core.asgi import get_asgi_application
 from django.urls import path
 from uvicorn.workers import UvicornWorker as BaseUvicornWorker
 
-from core.consumers import AsyncHealthCheckConsumer
+from core.middleware import WebSocketHealthCheckMiddleware
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
@@ -34,12 +34,13 @@ application = ProtocolTypeRouter({
     "http": django_asgi_app,
 
     # WebSocket chat handler
-    "websocket": AllowedHostsOriginValidator(
-        TokenAuthMiddleware(
-            URLRouter([
-                path('ws/health', AsyncHealthCheckConsumer.as_asgi()),
-                path('ws/', root_routing),
-            ]))
+    "websocket": WebSocketHealthCheckMiddleware(
+        AllowedHostsOriginValidator(
+            TokenAuthMiddleware(
+                URLRouter([
+                    path('ws/', root_routing),
+                ]))
+        )
     )
 })
 
