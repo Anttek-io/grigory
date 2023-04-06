@@ -65,10 +65,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third party apps
+    'ms_auth_router',
+    'rest_framework',
     'django_celery_beat',
     'django_celery_results',
-    'rest_framework',
-    'rest_framework.authtoken',
     'corsheaders',
 
     # Local apps
@@ -113,6 +113,17 @@ TEMPLATES = [
 DATABASES = {
     'default': dj_database_url.config(default='sqlite:///db.sqlite3', conn_max_age=600)
 }
+
+DATABASE_ROUTERS = [
+    'ms_auth_router.routers.DefaultRouter',
+]
+
+ROUTE_APP_LABELS = ('authentication', )
+
+AUTH_DB = getenv('AUTH_DB_URL', 'default')
+
+if AUTH_DB != 'default':
+    DATABASES['auth_db'] = dj_database_url.parse(AUTH_DB)
 
 
 # Password validation
@@ -199,3 +210,31 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+# Django REST Framework settings
+
+REST_AUTH_TOKEN_MODEL = 'authentication.Token'
+
+REST_AUTH_TOKEN_TTL = getenv('DJANGO_REST_AUTH_TOKEN_TTL', 60 * 60 * 24)
+
+REST_AUTH_TOKEN_CREATOR = 'authentication.utils.create_token'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'authentication.utils.ExpiringTokenAuthentication'
+    ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
+    'DATETIME_FORMAT': "%Y-%m-%d %H:%M:%S",
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'core.api.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
+
+REST_EXPOSE_AUTH_API = getenv('DJANGO_REST_EXPOSE_AUTH_API', True)
