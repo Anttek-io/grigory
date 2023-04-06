@@ -33,14 +33,16 @@ jobs:
         with:
           images: ${{ secrets.DOCKER_USERNAME }}/grigory
 
+      # Also build an image with Oracle client. Mark it as latest-oracle.
       - name: Extract metadata (tags, labels) for oracle image
         id: meta-oracle
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
           images: ${{ secrets.DOCKER_USERNAME }}/grigory
           flavor: |
-              suffix=-oracle
-              latest=true
+            latest=latest-oracle
+            latest-oracle=true
+            suffix=-oracle
 
       - name: Build and push main image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
