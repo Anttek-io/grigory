@@ -1,4 +1,5 @@
 import datetime
+from django.utils import timezone
 
 from channels.db import database_sync_to_async
 from channels.middleware import BaseMiddleware
@@ -19,7 +20,7 @@ def get_user(token_key):
             return None
         if not token.active:
             return None
-        now = datetime.datetime.now()
+        now = timezone.now()
         diff = now - datetime.timedelta(seconds=REST_AUTH_TOKEN_TTL)
         if token.last_use < diff:
             token.active = False
