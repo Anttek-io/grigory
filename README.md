@@ -10,6 +10,12 @@
 - [x] Microservice architecture-ready (with [MS DB Router](https://github.com/dj-ms/dj-ms-auth-router))
 
 
+### Features to be implemented
+
+- [ ] Chat management
+- [ ] REST API both for clients and for microservices
+- [ ] Using system events as messages in chat
+
 
 ## Postman workspace
 
