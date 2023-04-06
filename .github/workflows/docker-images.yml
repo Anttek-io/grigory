@@ -40,6 +40,7 @@ jobs:
           images: ${{ secrets.DOCKER_USERNAME }}/grigory
           flavor: |
               suffix=-oracle
+              latest=true
 
       - name: Build and push main image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
