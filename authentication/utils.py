@@ -1,15 +1,12 @@
 import datetime
 import uuid
 
-from django.conf import settings
 from django.utils import timezone
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 
 from authentication.models import Token
-
-
-TOKEN_TTL = settings.REST_AUTH_TOKEN_TTL
+from core.settings import REST_AUTH_TOKEN_TTL
 
 
 def generate_token(user):
@@ -35,7 +32,7 @@ class ExpiringTokenAuthentication(TokenAuthentication):
             if not token.active:
                 raise AuthenticationFailed({"error": "Inactive Token", "is_authenticated": False})
             now = timezone.now()
-            diff = now - datetime.timedelta(seconds=TOKEN_TTL)
+            diff = now - datetime.timedelta(seconds=REST_AUTH_TOKEN_TTL)
             if token.last_use < diff:
                 token.active = False
                 token.save()

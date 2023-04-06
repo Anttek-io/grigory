@@ -120,10 +120,11 @@ DATABASE_ROUTERS = [
 
 ROUTE_APP_LABELS = ('authentication', )
 
-AUTH_DB = getenv('AUTH_DB_URL', 'default')
+AUTH_DB = 'default'
 
-if AUTH_DB != 'default':
-    DATABASES['auth_db'] = dj_database_url.parse(AUTH_DB)
+if auth_db := os.getenv('AUTH_DB_URL'):
+    AUTH_DB = 'auth_db'
+    DATABASES['auth_db'] = dj_database_url.parse(auth_db)
 
 
 # Password validation

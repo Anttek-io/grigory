@@ -7,6 +7,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.chat_slug = None
 
     async def connect(self):
+        print(self.scope)
         self.chat_slug = "qwerty"
         await self.channel_layer.group_add(
             self.chat_slug,
