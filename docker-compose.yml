@@ -24,17 +24,6 @@ services:
         condition: on-failure
   django:
     image: harleyking/grigory:${TAG:-latest}
-    deploy:
-      replicas: 1
-      restart_policy:
-          condition: on-failure
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
     environment: *environment
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -44,17 +33,6 @@ services:
   celery:
     image: harleyking/grigory:${TAG:-latest}
     command: celery -A core worker -l debug --concurrency 1 -P solo -E
-    deploy:
-      replicas: 1
-      restart_policy:
-          condition: on-failure
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
     entrypoint: []
     environment: *environment
     healthcheck:
@@ -65,16 +43,5 @@ services:
   celery-beat:
     image: harleyking/grigory:${TAG:-latest}
     command: celery -A core beat -l debug
-    deploy:
-      replicas: 1
-      restart_policy:
-          condition: on-failure
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
     entrypoint: []
     environment: *environment

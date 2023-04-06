@@ -1,3 +1,7 @@
+x-environment: &environment
+  DATABASE_URL: postgres://grigory:grigory@postgres:5432/grigory
+
+
 services:
   postgres:
     image: postgres:12
@@ -18,8 +22,7 @@ services:
     depends_on:
       - redis
       - postgres
-    environment:
-      - DATABASE_URL=postgres://grigory:grigory@postgres:5432/grigory
+    environment: *environment
     ports:
       - "${DJANGO_WEB_PORT:-}:8000"
     volumes:
@@ -28,16 +31,14 @@ services:
     command: celery -A core worker -l debug --concurrency 1 -P solo -E
     depends_on:
       - django
-    environment:
-      - DATABASE_URL=postgres://grigory:grigory@postgres:5432/grigory
+    environment: *environment
     volumes:
       - .:/home/django
   celery-beat:
     command: celery -A core beat -l debug
     depends_on:
       - django
-    environment:
-      - DATABASE_URL=postgres://grigory:grigory@postgres:5432/grigory
+    environment: *environment
     volumes:
       - .:/home/django
 

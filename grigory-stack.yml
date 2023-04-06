@@ -1,0 +1,53 @@
+version: '3.9'
+
+
+services:
+  redis:
+    extends:
+      file: docker-compose.yml
+      service: redis
+  django:
+    extends:
+      file: docker-compose.yml
+      service: django
+    deploy:
+      replicas: 1
+      restart_policy:
+          condition: on-failure
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+  celery:
+    extends:
+      file: docker-compose.yml
+      service: celery
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+  celery-beat:
+    extends:
+      file: docker-compose.yml
+      service: celery-beat
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
