@@ -62,9 +62,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def send_messages(self, offset=0, limit=MESSAGES_LIMIT):
         messages = await self.get_messages(offset, limit)
         await self.send(text_data=json.dumps({
-            'messages': messages,
             'offset': offset,
-            'limit': limit
+            'limit': limit,
+            'messages': messages
         }))
 
     @database_sync_to_async
