@@ -39,7 +39,7 @@ jobs:
         with:
           images: ${{ secrets.DOCKER_USERNAME }}/grigory
           flavor: |
-            latest-oracle=true
+            latest=true
             suffix=-oracle
 
       - name: Build and push main image
