@@ -5,7 +5,7 @@ python-dotenv~=1.0.0
 #  Django 4.2 is throwing warnings:
 #  "StreamingHttpResponse must consume synchronous iterators in order to serve them asynchronously. ..."
 Django==4.1
-django-rest-framework
+djangorestframework
 
 # Database
 psycopg2-binary

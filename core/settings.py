@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # Local apps
+    'authentication',
     'app',
 ]
 
