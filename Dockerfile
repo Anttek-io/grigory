@@ -2,6 +2,10 @@ FROM python:3.10-slim-bullseye as base
 
 SHELL ["/bin/bash", "-c"]
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl &&  \
+    rm -rf /var/lib/apt/lists/*
+
 
 FROM base as builder
 

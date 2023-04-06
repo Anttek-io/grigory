@@ -1,19 +1,40 @@
 version: '3.9'
 
 
+x-environment: &environment
+  DJANGO_DEBUG: ${DJANGO_DEBUG:-True}
+  DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-}
+  DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-}
+  DJANGO_LANGUAGE_CODE: ${DJANGO_LANGUAGE_CODE:-}
+  DJANGO_TIME_ZONE: ${DJANGO_TIME_ZONE:-}
+  DJANGO_COLLECT_STATIC: ${DJANGO_COLLECT_STATIC:-}
+  DJANGO_REST_AUTH_TOKEN_TTL: ${DJANGO_REST_AUTH_TOKEN_TTL:-}
+  DJANGO_REST_EXPOSE_AUTH_API: ${DJANGO_REST_EXPOSE_AUTH_API:-}
+  AUTH_DB_URL: ${AUTH_DB_URL:-}
+  REDIS_URL: redis://redis:6379
+  DATABASE_URL: ${DATABASE_URL:-}
+  VIRTUAL_HOST: ${VIRTUAL_HOST:-}
+  STACK_NAME: ${STACK_NAME:-}
+
+
 services:
   redis:
-    extends:
-      file: docker-compose.yml
-      service: redis
+    image: redis:alpine
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
   django:
-    extends:
-      file: docker-compose.yml
-      service: django
+    image: harleyking/grigory:${TAG:-latest}
     deploy:
       replicas: 1
       restart_policy:
-          condition: on-failure
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
       resources:
         limits:
           cpus: '0.50'
@@ -21,14 +42,28 @@ services:
         reservations:
           cpus: '0.25'
           memory: 256M
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.${STACK_NAME}.rule=Host(`${VIRTUAL_HOST}`)"
+        - "traefik.http.routers.${STACK_NAME}.entrypoints=https"
+        - "traefik.http.routers.${STACK_NAME}.tls=true"
+        - "traefik.http.services.${STACK_NAME}.loadbalancer.server.port=8000"
+        - "traefik.docker.network=traefik_default"
+    environment: *environment
+    networks:
+      - traefik_default
   celery:
-    extends:
-      file: docker-compose.yml
-      service: celery
+    image: harleyking/grigory:${TAG:-latest}
+    command: celery -A core worker -l debug --concurrency 1 -P solo -E
     deploy:
       replicas: 1
       restart_policy:
         condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
       resources:
         limits:
           cpus: '0.50'
@@ -36,14 +71,25 @@ services:
         reservations:
           cpus: '0.25'
           memory: 256M
+    entrypoint: []
+    environment: *environment
+    healthcheck:
+      test: ["CMD", "celery", "-A", "core", "inspect", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
   celery-beat:
-    extends:
-      file: docker-compose.yml
-      service: celery-beat
+    image: harleyking/grigory:${TAG:-latest}
+    command: celery -A core beat -l debug
     deploy:
       replicas: 1
       restart_policy:
         condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
       resources:
         limits:
           cpus: '0.50'
@@ -51,3 +97,10 @@ services:
         reservations:
           cpus: '0.25'
           memory: 256M
+    entrypoint: []
+    environment: *environment
+
+
+networks:
+  traefik_default:
+    external: true
