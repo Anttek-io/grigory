@@ -33,7 +33,7 @@ class Chat(models.Model):
     chat_type = models.CharField(max_length=7, choices=chat_type_choices, default='private')
 
     slug = models.SlugField(max_length=32, unique=True, blank=True, null=True, default=None)
-    users = models.JSONField(encoder=DjangoJSONEncoder, default=list)
+    members = models.JSONField(encoder=DjangoJSONEncoder, default=list)
 
     class Meta:
         verbose_name = _('Chat')
@@ -41,7 +41,7 @@ class Chat(models.Model):
         ordering = ('-id', 'slug', 'chat_type')
 
     def __str__(self):
-        return str(self.id)
+        return self.slug
 
 
 class Message(BaseMessage):

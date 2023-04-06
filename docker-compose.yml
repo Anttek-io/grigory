@@ -22,7 +22,7 @@ services:
     image: harleyking/grigory:${TAG:-latest}
     environment: *environment
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: curl -f http://localhost:8000/health || exit 1
       interval: 5s
       timeout: 5s
       retries: 30
