@@ -12,7 +12,7 @@ x-environment: &environment
   DJANGO_REST_EXPOSE_AUTH_API: ${DJANGO_REST_EXPOSE_AUTH_API:-}
   AUTH_DB_URL: ${AUTH_DB_URL:-}
   REDIS_URL: redis://redis:6379
-  DATABASE_URL: postgres://grigory:grigory@postgres:5432/grigory
+  DATABASE_URL: ${DATABASE_URL:-}
 
 
 services:
@@ -22,23 +22,8 @@ services:
       replicas: 1
       restart_policy:
         condition: on-failure
-  postgres:
-    image: postgres:12
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-    environment:
-      - POSTGRES_DB=grigory
-      - POSTGRES_USER=grigory
-      - POSTGRES_PASSWORD=grigory
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
   django:
     image: harleyking/grigory:${TAG:-latest}
-    depends_on:
-      - redis
-      - postgres
     deploy:
       replicas: 1
       restart_policy:
@@ -59,8 +44,6 @@ services:
   celery:
     image: harleyking/grigory:${TAG:-latest}
     command: celery -A core worker -l debug --concurrency 1 -P solo -E
-    depends_on:
-      - django
     deploy:
       replicas: 1
       restart_policy:
@@ -82,8 +65,6 @@ services:
   celery-beat:
     image: harleyking/grigory:${TAG:-latest}
     command: celery -A core beat -l debug
-    depends_on:
-      - django
     deploy:
       replicas: 1
       restart_policy:
@@ -97,7 +78,3 @@ services:
           memory: 256M
     entrypoint: []
     environment: *environment
-
-
-volumes:
-  postgres_data:

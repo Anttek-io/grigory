@@ -127,7 +127,6 @@ if auth_db := os.getenv('AUTH_DB_URL'):
     AUTH_DB = 'auth_db'
     DATABASES['auth_db'] = dj_database_url.parse(auth_db)
 
-pprint(DATABASES)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
