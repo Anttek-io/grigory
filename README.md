@@ -5,8 +5,10 @@ It's designed to be used as a microservice in a microservice architecture,
 but can be used as a standalone service as well.  
 It provides both REST API and WebSockets for clients and microservices.  
 
-![screenshot](docs/media/scheme.png)
-
+![screenshot](docs/media/scheme.png)  
+  
+> If you find this project useful, please consider giving it a star.
+  
 ### How it works
 
 Any microservice or client just sends some message via REST API or WebSockets with the indication of the chat it belongs to.  
@@ -20,7 +22,7 @@ Message history can be retrieved via REST API or WebSockets.
   
 You can try the demo at [https://grigory-demo.anttek.io/admin](https://grigory-demo.anttek.io/admin).  
   
-Admin user is `demo` and password is `demo-123`.  
+> Demo admin user is `demo` and password is `demo-123`.  
   
 API is available at [https://grigory-demo.anttek.io/api](https://grigory-demo.anttek.io/api).  
 WebSockets are available at [wss://grigory-demo.anttek.io/ws](wss://grigory-demo.anttek.io/ws).  
@@ -80,6 +82,17 @@ docker compose up -d
 #### Without Docker
   
 [Quick start without Docker](docs/RUN_LOCALLY_WITHOUT_DOCKER.md)
+  
+---  
+  
+### Docker images
+  
+[DockerHub Page](https://hub.docker.com/r/harleyking/grigory)  
+  
+There are two versions of the image: base and `-oracle` version.  
+Difference between them is that `-oracle` version includes [cx_Oracle](https://pypi.org/project/cx-Oracle/) 
+and [Oracle Instant Client](https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html) libraries.  
+If you need to use Oracle database, you should use `-oracle` version.  
   
 ---  
   
