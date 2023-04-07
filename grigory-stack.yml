@@ -52,11 +52,11 @@ services:
         - "traefik.docker.network=traefik_default"
     environment: *environment
     healthcheck:
-      test: curl -f http://localhost:8000/health || exit 1
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 5s
       timeout: 5s
       retries: 30
-      start_period: 60s
+      start_period: 30s
     networks:
       - default
       - traefik_default
