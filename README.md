@@ -86,7 +86,7 @@ docker compose up -d
 
 #### Without Docker
   
-[Quick start without Docker](docs/run_locally_without_docker.md)
+[Quick start without Docker](docs/quickstart_no_docker.md)
   
 ---  
   
