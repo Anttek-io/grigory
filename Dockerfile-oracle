@@ -13,7 +13,7 @@ FROM python:3.10-slim-bullseye as base
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update && \
-    apt-get install -y libaio1 --no-install-recommends && \
+    apt-get install -y libaio1 curl --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
 
