@@ -14,7 +14,16 @@ This message first goes to queue to avoid overloading the database.
 Then it's processed by the worker and saved to the database. If specified chat doesn't exist, it's created automatically.
 After that, the message is sent to the chat via WebSockets.  
 
-Message history can be retrieved via REST API or WebSockets.
+Message history can be retrieved via REST API or WebSockets.  
+  
+#### Demo
+  
+You can try the demo at [https://grigory-demo.anttek.io/admin](https://grigory-demo.anttek.io/admin).  
+  
+Admin user is `demo` and password is `demo-123`.  
+  
+API is available at [https://grigory-demo.anttek.io/api](https://grigory-demo.anttek.io/api).  
+WebSockets are available at [wss://grigory-demo.anttek.io/ws](wss://grigory-demo.anttek.io/ws).  
 
 
 ### Features implemented
