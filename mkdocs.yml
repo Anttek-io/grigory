@@ -6,6 +6,10 @@ repo_name: 'Anttek-io/grigory'
 repo_url: 'https://github.com/Anttek-io/grigory'
 nav:
   - Home: index.md
-  - Quickstart with no Docker: quickstart_no_docker.md
+  - Demo: demo.md
+  - Requirements: requirements.md
+  - Quickstart: quickstart.md
+  - Docker images: docker-images.md
+  - Postman workspace: postman-workspace.md
 theme:
   name: 'material'

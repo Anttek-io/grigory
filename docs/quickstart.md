@@ -1,4 +1,26 @@
+# Quickstart
 
+First clone the repo
+
+```bash
+git clone https://github.com/Anttek-io/grigory.git
+cd grigory
+```
+
+## With Docker
+  
+Create `.env` file and put at least `DJANGO_WEB_PORT`  
+```shell
+DJANGO_WEB_PORT=8000
+```
+
+Run the app  
+```bash
+docker compose up -d
+```
+
+## Without Docker
+  
 Create virtual environment and install requirements:  
 ```bash
 python3 -m venv venv
@@ -29,4 +51,6 @@ Run server:
 ```bash
 gunicorn -w 1 --threads 1 --bind 127.0.0.1:8000
 ```
+  
+---
   
