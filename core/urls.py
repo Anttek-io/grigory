@@ -16,17 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from core.settings import REST_EXPOSE_AUTH_API
+from core.settings import REST_EXPOSE_AUTH_API, DJANGO_BASE_PATH
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path(DJANGO_BASE_PATH + 'admin/', admin.site.urls),
 ]
 
 if REST_EXPOSE_AUTH_API:
     urlpatterns += [
-        path('api/auth/', include('authentication.api.urls'), name='authentication'),
+        path(DJANGO_BASE_PATH + 'api/auth/', include('authentication.api.urls'), name='authentication'),
     ]
 
 urlpatterns += [
-    path('api/', include('app.api.urls'))
+    path(DJANGO_BASE_PATH + 'api/', include('app.api.urls'))
 ]

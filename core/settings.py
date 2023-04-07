@@ -53,6 +53,10 @@ if EXTRA_ALLOWED_HOSTS:
     assert isinstance(EXTRA_ALLOWED_HOSTS.split(','), list)
     ALLOWED_HOSTS.extend(EXTRA_ALLOWED_HOSTS.split(','))
 
+DJANGO_BASE_PATH = getenv('DJANGO_BASE_PATH', '')
+
+if not DJANGO_BASE_PATH.endswith('/'):
+    DJANGO_BASE_PATH += '/'
 
 # Application definition
 

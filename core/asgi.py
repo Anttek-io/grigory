@@ -17,6 +17,7 @@ from django.urls import path
 from uvicorn.workers import UvicornWorker as BaseUvicornWorker
 
 from core.middleware import WebSocketHealthCheckMiddleware
+from core.settings import DJANGO_BASE_PATH
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
@@ -40,7 +41,7 @@ application = ProtocolTypeRouter({
             ChatMiddleware(
                 TokenAuthMiddleware(
                     URLRouter([
-                        path('ws/', root_routing),
+                        path(DJANGO_BASE_PATH + 'ws/', root_routing),
                     ]))
             )
         )
