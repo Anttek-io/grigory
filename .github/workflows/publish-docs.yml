@@ -16,3 +16,4 @@ jobs:
         uses: mhausenblas/mkdocs-deploy-gh-pages@master
         env:
           PERSONAL_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          CONFIG_FILE: docs/mkdocs.yml
