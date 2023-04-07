@@ -24,8 +24,9 @@ Admin user is `demo` and password is `demo-123`.
   
 API is available at [https://grigory-demo.anttek.io/api](https://grigory-demo.anttek.io/api).  
 WebSockets are available at [wss://grigory-demo.anttek.io/ws](wss://grigory-demo.anttek.io/ws).  
-
-
+  
+---  
+  
 ### Features implemented
 
 - [x] Expiring Token authentication
@@ -41,22 +42,47 @@ WebSockets are available at [wss://grigory-demo.anttek.io/ws](wss://grigory-demo
 - [ ] Marking messages as read by concrete user
 
 
+### Requirements
+  
+#### With Docker
+  
+- [Docker with Compose](https://docs.docker.com/compose/install/)
+
+#### Without Docker
+  
+- [Python 3.9 or higher](https://www.python.org/downloads/)
+- [PostgreSQL 12 or higher](https://www.postgresql.org/download/)
+- [Redis](https://redis.io/download)
+  
+---  
+  
 ### Quick start
 
-#### 1. Clone the repo
+First clone the repo
 
 ```bash
 git clone https://github.com/Anttek-io/grigory.git
+cd grigory
 ```
 
-#### 2. Enter the directory and start Compose project
+#### With Docker
+  
+Create `.env` file and put at least `DJANGO_WEB_PORT`  
+```shell
+DJANGO_WEB_PORT=8000
+```
 
+Run the app  
 ```bash
-cd grigory
 docker compose up -d
 ```
 
-
+#### Without Docker
+  
+[Quick start without Docker](docs/RUN_LOCALLY_WITHOUT_DOCKER.md)
+  
+---  
+  
 ## Postman workspace
 
 There's public Postman workspace with all the requests and collections.
