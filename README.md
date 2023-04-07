@@ -32,7 +32,7 @@ You can try the demo at [https://grigory-demo.anttek.io/admin](https://grigory-d
 API is available at [https://grigory-demo.anttek.io/api](https://grigory-demo.anttek.io/api).  
 WebSockets are available at [wss://grigory-demo.anttek.io/ws](wss://grigory-demo.anttek.io/ws).  
   
----  
+---
   
 ### Features implemented
 
@@ -61,7 +61,7 @@ WebSockets are available at [wss://grigory-demo.anttek.io/ws](wss://grigory-demo
 - [PostgreSQL 12 or higher](https://www.postgresql.org/download/)
 - [Redis](https://redis.io/download)
   
----  
+---
   
 ### Quick start
 
@@ -84,7 +84,7 @@ Run the app
 docker compose up -d
 ```
   
----  
+---
   
 ## Postman workspace
 
