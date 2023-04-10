@@ -12,6 +12,8 @@ It's built on top of Django and Django Channels.
 It's designed to be used as a microservice in a microservice architecture, 
 but can be used as a standalone service as well.  
 It provides both REST API and WebSockets for clients and microservices.  
+>
+> **If you find this project useful, please consider giving it a star ⭐️**
   
 ## Who was this project made for?
   
@@ -36,8 +38,6 @@ If specified chat doesn't exist, it's created automatically.
 4. After that, the message is sent to real-time chat via WebSockets.
 
 Message history can be retrieved via REST API or WebSockets.  
-  
-> **If you find this project useful, please consider giving it a star ⭐️**
   
 ### Demo
   
