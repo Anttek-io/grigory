@@ -22,8 +22,6 @@ Or backend developers who need to implement chat and notifications in their proj
 > Just add `AUTH_DB_URL` environment variable that points to your main Django database.  
 > After that Grigory will use your main Django database for authentication.  
   
-#### If you find this project useful, please consider giving it a star.  
-  
 ---
   
 ## How it works
@@ -38,6 +36,8 @@ If specified chat doesn't exist, it's created automatically.
 4. After that, the message is sent to real-time chat via WebSockets.
 
 Message history can be retrieved via REST API or WebSockets.  
+  
+> **If you find this project useful, please consider giving it a star ⭐️**
   
 ### Demo
   
