@@ -43,6 +43,10 @@ Message history can be retrieved via REST API or WebSockets.
   
 ### Demo
   
+|                                             |                                             |
+|:-------------------------------------------:|:-------------------------------------------:|
+| <img src="media/demo-1.png" height="300" /> | <img src="media/demo-2.png" height="300" /> |
+  
 You can try the demo at [https://grigory-demo.anttek.io/admin](https://grigory-demo.anttek.io/admin).  
   
 > Demo admin user is `demo` and password is `demo-123`.  
