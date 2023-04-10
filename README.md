@@ -20,9 +20,9 @@ For example, frontend developers who needs chat and/or notifications functionali
 Or backend developers who need to implement chat and notifications in their project.
 > If you're main backend is made on Django, you can use Grigory as a part of your microservice architecture.  
 > Just add `AUTH_DB_URL` environment variable that points to your main Django database.  
-> After that Grigory will use your main Django database for authentication.
+> After that Grigory will use your main Django database for authentication.  
   
-> #### If you find this project useful, please consider giving it a star.  
+#### If you find this project useful, please consider giving it a star.  
   
 ---
   
