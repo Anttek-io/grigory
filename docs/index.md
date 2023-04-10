@@ -43,9 +43,9 @@ Message history can be retrieved via REST API or WebSockets.
   
 ### Demo
   
-|                                             |                                             |
-|:-------------------------------------------:|:-------------------------------------------:|
-| <img src="media/demo-1.png" height="300" /> | <img src="media/demo-2.png" height="300" /> |
+|                                               |                                               |
+|:---------------------------------------------:|:---------------------------------------------:|
+| <img src="media/demo-1.png" height="300px" /> | <img src="media/demo-2.png" height="300px" /> |
   
 You can try the demo at [https://grigory-demo.anttek.io/admin](https://grigory-demo.anttek.io/admin).  
   
