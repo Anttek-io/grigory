@@ -5,15 +5,15 @@
 [![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/harleyking/grigory?sort=semver)](https://hub.docker.com/r/harleyking/grigory)
 [![Docker Pulls](https://img.shields.io/docker/pulls/harleyking/grigory)](https://hub.docker.com/r/harleyking/grigory)  
   
-> Grigory is backend for notification service, real-time chats and microservices communication.  
+Grigory is backend for notification service, real-time chats and microservices communication.  
 You don't need to implement all the logic for chats and notifications from scratch.  
 For example, you can just run Grigory and use it as backend for your chat and notifications.  
 It's built on top of Django and Django Channels.  
 It's designed to be used as a microservice in a microservice architecture, 
 but can be used as a standalone service as well.  
 It provides both REST API and WebSockets for clients and microservices.  
->
-> **If you find this project useful, please consider giving it a star ⭐️**
+
+**If you find this project useful, please consider giving it a star ⭐️**
   
 ## Who was this project made for?
   
