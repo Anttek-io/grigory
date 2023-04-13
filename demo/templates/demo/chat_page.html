@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <center><h1>Hello, {{request.user}}!</h1></center>
+    <br>
+    {% if request.user.is_authenticated  %}
+    <center> Logout the chat Page <a href = "{% url 'demo-logout' %}">Logout</a></center>
+    {% endif %}
+    <div class="chat__item__container" id="id_chat_item_container" style="font-size: 20px">
+      <br />
+      <input type="text" id="id_message_send_input" aria-label=""/>
+      <button type="submit" id="id_message_send_button">Send Message</button>
+      <br />
+      <br />
+    </div>
+    <script>
+      const chatSocket = new WebSocket(
+        "ws://" + window.location.host + "/ws/chat?chat_slug=demo-public"
+      );
+
+      chatSocket.onopen = function (e) {
+        console.log("The connection was setup successfully !");
+      };
+
+      chatSocket.onclose = function (e) {
+        console.log("Something unexpected happened !");
+      };
+
+      document.querySelector("#id_message_send_input").focus();
+
+      document.querySelector("#id_message_send_input").onkeyup = function (e) {
+        if (e.keyCode == 13) {
+          document.querySelector("#id_message_send_button").click();
+        }
+      };
+
+      document.querySelector("#id_message_send_button").onclick = function (e) {
+        var messageInput = document.querySelector(
+          "#id_message_send_input"
+        ).value;
+        chatSocket.send(JSON.stringify({ message: messageInput }));
+      };
+
+      chatSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        if (data.message) {
+          message = data.message;
+          sender = data.sender.username;
+          var div = document.createElement("div");
+          div.innerHTML = sender + ": " + message;
+          document.querySelector("#id_message_send_input").value = "";
+          document.querySelector("#id_chat_item_container").appendChild(div);
+        } else {
+          messages = data.messages;
+          offset = data.offset;
+          limit = data.limit;
+            for (var i = 0; i < messages.length; i++) {
+              message = messages[i].text;
+              sender = messages[i].sender.username;
+              var div = document.createElement("div");
+              div.innerHTML = sender + ": " + message;
+              document.querySelector("#id_chat_item_container").appendChild(div);
+            }
+          }
+      };
+    </script>
+  </body>
+</html>
