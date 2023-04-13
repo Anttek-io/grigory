@@ -49,10 +49,14 @@ Message history can be retrieved via REST API or WebSockets.
 | <img src="docs/media/demo-1.png" height="300px" /> | <img src="docs/media/demo-2.png" height="300px" /> |
   
 You can try the demo at [https://grigory-demo.anttek.io](https://grigory-demo.anttek.io).  
-API is available at [https://grigory-demo.anttek.io/api](https://grigory-demo.anttek.io/api).  
-WebSockets are available at `wss://grigory-demo.anttek.io/ws`.  
+To test it, open 2 tabs in your browser and login as 2 different users.  
+Then you can send messages between them.  
   
-> Demo admin user is `demo` and password is `demo-123`.  
+> There are 2 users in the demo: `demo-1` and `demo-2`.  
+> They have same password: `demo-123`.  
+  
+API is available at [https://grigory-demo.anttek.io/api](https://grigory-demo.anttek.io/api).  
+WebSockets are available at `wss://grigory-demo.anttek.io/ws`.
   
 ---
   
