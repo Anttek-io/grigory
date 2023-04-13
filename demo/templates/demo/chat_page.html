@@ -14,8 +14,13 @@
       <br />
     </div>
     <script>
+      if (window.location.protocol == "http:") {
+        var wsStart = "ws://";
+      } else {
+        var wsStart = "wss://";
+      }
       const chatSocket = new WebSocket(
-        "ws://" + window.location.host + "/ws/chat?chat_slug=demo-public"
+        wsStart + window.location.host + "/ws/chat?chat_slug=demo-public"
       );
 
       chatSocket.onopen = function (e) {
