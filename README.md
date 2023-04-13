@@ -45,7 +45,7 @@ Message history can be retrieved via REST API or WebSockets.
 |:--------------------------------------------------:|:--------------------------------------------------:|
 | <img src="docs/media/demo-1.png" height="300px" /> | <img src="docs/media/demo-2.png" height="300px" /> |
   
-You can try the demo at [https://grigory-demo.anttek.io/admin](https://grigory-demo.anttek.io/admin).  
+You can try the demo at [https://grigory-demo.anttek.io](https://grigory-demo.anttek.io).  
 API is available at [https://grigory-demo.anttek.io/api](https://grigory-demo.anttek.io/api).  
 WebSockets are available at `wss://grigory-demo.anttek.io/ws`.  
   

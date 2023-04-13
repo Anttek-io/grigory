@@ -33,5 +33,5 @@ urlpatterns += [
 
 if EXPOSE_DEMO_SITE:
     urlpatterns += [
-        path(DJANGO_BASE_PATH + 'demo/', include('demo.urls'))
+        path(DJANGO_BASE_PATH + '', include('demo.urls'))
     ]

@@ -248,3 +248,11 @@ REST_EXPOSE_AUTH_API = getenv('DJANGO_REST_EXPOSE_AUTH_API', True)
 # Misc
 
 EXPOSE_DEMO_SITE = getenv('DJANGO_EXPOSE_DEMO_SITE', True)
+
+# Auth settings
+
+LOGIN_URL = '/admin/login/'
+
+LOGIN_REDIRECT_URL = '/'
+
+LOGOUT_REDIRECT_URL = '/'

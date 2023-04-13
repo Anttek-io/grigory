@@ -1,8 +1,7 @@
-from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 
 
+@login_required
 def chat_page(request, *args, **kwargs):
-    if not request.user.is_authenticated:
-        return redirect("demo-login")
-    context = {}
-    return render(request, "demo/chat_page.html", context)
+    return render(request, "demo/chat_page.html")
