@@ -43,6 +43,9 @@ Message history can be retrieved via REST API or WebSockets.
   
 ### Demo
   
+> Grigory needs some pretty demo site. But I'm bad at frontend, so if you want to help,
+> please contact me at [rustam@astafeev.dev](mailto:rustam@astafeev.dev).
+  
 |                                               |                                               |
 |:---------------------------------------------:|:---------------------------------------------:|
 | <img src="media/demo-1.png" height="300px" /> | <img src="media/demo-2.png" height="300px" /> |
