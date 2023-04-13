@@ -1,11 +1,10 @@
 import json
 
-from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
+from channels.generic.websocket import AsyncWebsocketConsumer
 
 from app.models import Message
 from app.serializers.messages import MessageSerializer
-
 
 MESSAGES_LIMIT = 10
 
@@ -17,6 +16,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.chat = None
         self.message = None
 
+    async def create_message(self, message):
+        return await database_sync_to_async(Message.objects.create)(
+            chat=self.chat,
+            text=message,
+            sender_id=self.user.id
+        )
+
     async def connect(self):
         self.user = self.scope['user']
         self.chat = self.scope['chat']
@@ -25,7 +31,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
-        await self.send_messages()
+        # await self.send_message_list()
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
@@ -43,32 +49,36 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if action == 'load_messages':
             offset = data.get('offset')
             limit = data.get('limit')
-            await self.send_messages(offset, limit)
+            await self.send_message_list(offset, limit)
         if message:
             self.message = await self.create_message(message)
-            await self.message.send_to_websocket()
+            serializer = MessageSerializer(self.message)
+            await serializer.send_to_websocket()
 
     async def chat_message(self, event):
-        event.pop('type')
-        await self.send(text_data=json.dumps(event))
+        assert event.get('data'), 'Data is required'
+        await self.send(text_data=json.dumps(event['data']))
 
-    async def create_message(self, message):
-        return await database_sync_to_async(Message.objects.create)(
-            chat=self.chat,
-            text=message,
-            sender_id=self.user.id
-        )
-
-    async def send_messages(self, offset=0, limit=MESSAGES_LIMIT):
-        messages = await self.get_messages(offset, limit)
-        await self.send(text_data=json.dumps({
+    async def send_message_list(self, offset=0, limit=MESSAGES_LIMIT):
+        messages, count, total = await self.get_messages(offset, limit)
+        data = {
             'offset': offset,
             'limit': limit,
+            'count': count,
+            'total': total,
             'messages': messages
-        }))
+        }
+        await self.channel_layer.group_send(
+            self.chat.slug,
+            {
+                'type': 'chat_message',
+                'data': data
+            }
+        )
 
     @database_sync_to_async
     def get_messages(self, offset=0, limit=MESSAGES_LIMIT):
         qs = Message.objects.filter(chat=self.chat).order_by('-timestamp')[offset:limit]
+        total = Message.objects.filter(chat=self.chat).count()
         serializer = MessageSerializer(qs, many=True)
-        return serializer.data
+        return serializer.data, qs.count(), total

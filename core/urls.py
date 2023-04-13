@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from core.settings import REST_EXPOSE_AUTH_API, DJANGO_BASE_PATH
+from core.settings import REST_EXPOSE_AUTH_API, DJANGO_BASE_PATH, EXPOSE_DEMO_SITE
 
 urlpatterns = [
     path(DJANGO_BASE_PATH + 'admin/', admin.site.urls),
@@ -30,3 +30,8 @@ if REST_EXPOSE_AUTH_API:
 urlpatterns += [
     path(DJANGO_BASE_PATH + 'api/', include('app.api.urls'))
 ]
+
+if EXPOSE_DEMO_SITE:
+    urlpatterns += [
+        path(DJANGO_BASE_PATH + 'demo/', include('demo.urls'))
+    ]

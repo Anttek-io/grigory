@@ -1,9 +1,11 @@
 import datetime
-from django.utils import timezone
 
+from channels.auth import login, AuthMiddleware
 from channels.db import database_sync_to_async
-from channels.middleware import BaseMiddleware
 from channels.security.websocket import WebsocketDenier
+from channels.sessions import CookieMiddleware, SessionMiddleware
+from django.contrib.auth.models import AnonymousUser
+from django.utils import timezone
 
 from authentication.models import Token
 from core.settings import REST_AUTH_TOKEN_TTL
@@ -31,25 +33,28 @@ def get_user(token_key):
     return token.user
 
 
-class TokenAuthMiddleware(BaseMiddleware):
-    """
-    Token authorization middleware for Django Channels 4.
-    Parses the token from the connection's headers and populates
-    scope["user"]. If the token is invalid, denies the connection.
-    """
+class TokenAuthMiddleware:
     keyword = 'Bearer'
 
     def __init__(self, inner):
-        super().__init__(inner)
+        self.inner = inner
 
     async def __call__(self, scope, receive, send):
+        if scope.get('user') not in (None, AnonymousUser):
+            return await self.inner(scope, receive, send)
         headers = dict(scope["headers"])
         if b"authorization" in headers:
             auth = headers[b"authorization"].decode()
             if auth.startswith(self.keyword):
                 token = auth.split()[1]
                 scope["user"] = await get_user(token)
-        if not scope.get('user'):
-            denier = WebsocketDenier()
-            return await denier(scope, receive, send)
-        return await super().__call__(scope, receive, send)
+                if scope.get('user') not in (None, AnonymousUser):
+                    await login(scope, scope.get('user'))
+                else:
+                    denier = WebsocketDenier()
+                    return await denier(scope, receive, send)
+        return await self.inner(scope, receive, send)
+
+
+def AuthMiddlewareStack(inner):
+    return CookieMiddleware(SessionMiddleware(TokenAuthMiddleware(AuthMiddleware(inner))))

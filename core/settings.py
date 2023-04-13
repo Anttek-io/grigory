@@ -55,7 +55,7 @@ if EXTRA_ALLOWED_HOSTS:
 
 DJANGO_BASE_PATH = getenv('DJANGO_BASE_PATH', '')
 
-if not DJANGO_BASE_PATH.endswith('/'):
+if DJANGO_BASE_PATH != '' and not DJANGO_BASE_PATH.endswith('/'):
     DJANGO_BASE_PATH += '/'
 
 # Application definition
@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     # Local apps
     'authentication',
     'app',
+    'demo',
 ]
 
 MIDDLEWARE = [
@@ -243,3 +244,7 @@ REST_FRAMEWORK = {
 }
 
 REST_EXPOSE_AUTH_API = getenv('DJANGO_REST_EXPOSE_AUTH_API', True)
+
+# Misc
+
+EXPOSE_DEMO_SITE = getenv('DJANGO_EXPOSE_DEMO_SITE', True)
