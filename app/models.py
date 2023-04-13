@@ -1,4 +1,3 @@
-from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
@@ -15,13 +14,8 @@ class BaseMessage(models.Model):
     class Meta:
         abstract = True
 
-    async def async_get_sender(self):
-        try:
-            return await database_sync_to_async(User.objects.get)(id=self.sender_id)
-        except User.DoesNotExist:
-            return None
-
-    def get_sender(self):
+    @property
+    def sender(self):
         try:
             return User.objects.get(id=self.sender_id)
         except User.DoesNotExist:
