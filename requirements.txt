@@ -7,7 +7,7 @@ djangorestframework
 django-filter
 
 # Microservices
-dj-ms-auth-router==1.5.0
+dj-ms-auth-router==1.5.1
 
 # Database
 psycopg2-binary
@@ -22,7 +22,7 @@ uvicorn[standard]~=0.21.1
 whitenoise
 
 # Distributed async tasks
-celery~=5.2.7
+celery
 redis
 django-celery-beat
 django-celery-results

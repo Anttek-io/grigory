@@ -54,7 +54,8 @@ services:
     image: harleyking/grigory:${TAG:-latest}
     command: celery -A core worker -l debug --concurrency 1 -P solo -E
     depends_on:
-      - django
+      django:
+        condition: service_healthy
     entrypoint: []
     environment: *environment
     healthcheck:
@@ -68,7 +69,8 @@ services:
     image: harleyking/grigory:${TAG:-latest}
     command: celery -A core beat -l debug
     depends_on:
-      - django
+      django:
+        condition: service_healthy
     entrypoint: []
     environment: *environment
     volumes:

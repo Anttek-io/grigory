@@ -46,10 +46,16 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.${STACK_NAME}.rule=Host(`${VIRTUAL_HOST}`)"
-        - "traefik.http.routers.${STACK_NAME}.entrypoints=https"
+        - "traefik.http.routers.${STACK_NAME}.entrypoints=https" # or websecure sometimes
         - "traefik.http.routers.${STACK_NAME}.tls=true"
         - "traefik.http.services.${STACK_NAME}.loadbalancer.server.port=8000"
         - "traefik.docker.network=traefik_default"
+        - "traefik.http.routers.${STACK_NAME}.middlewares=${STACK_NAME}-redirect"
+        - "traefik.http.middlewares.${STACK_NAME}-redirect.redirectscheme.scheme=https"
+        - "traefik.http.middlewares.${STACK_NAME}-redirect.redirectscheme.permanent=true"
+        - "traefik.http.middlewares.${STACK_NAME}-redirect.redirectscheme.port=443"
+        - "traefik.http.routers.${STACK_NAME}.tls.certresolver=production"
+        - "traefik.http.routers.${STACK_NAME}.tls.domains[0].main=${VIRTUAL_HOST}"
     environment: *environment
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
