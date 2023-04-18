@@ -6,26 +6,24 @@
   <header class="text-center">
     <h1 class="display-4 text-white">Grigory Demo</h1>
     <p class="text-white lead mb-0">Hello, {{ request.user }}</p>
-    {% if request.user.is_authenticated  %}
-    <p class="text-white lead mb-4">Logout the chat Page
+    <p class="text-white lead mb-4">
       <a href="{% url 'demo-logout' %}" class="text-white">
         <u>Logout</u></a>
     </p>
-    {% endif %}
   </header>
 
-  <div class="row rounded-lg overflow-hidden shadow">
+  <div class="row rounded-lg overflow-hidden shadow bg-white">
     <!-- Users box-->
-    <div class="col-5 px-0">
-      <div class="bg-white">
+    <div class="col-sm-3 px-0 border-right">
+      <div>
 
         <div class="bg-gray px-4 py-2 bg-light">
           <p class="h5 mb-0 py-1">Chat list</p>
         </div>
 
         <div class="messages-box">
-          <div class="list-group rounded-0">
-            <a class="list-group-item list-group-item-action active text-white rounded-0">
+          <div class="list-group rounded-0 px-2 py-2">
+            <a class="list-group-item list-group-item-action active text-white rounded">
               <div class="media"><img src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg" alt="user" width="50" class="rounded-circle">
                 <div class="media-body ml-4">
                   <div class="d-flex align-items-center justify-content-between mb-1">
@@ -41,20 +39,23 @@
       </div>
     </div>
     <!-- Chat Box-->
-    <div class="col-7 px-0">
-      <div class="px-4 py-5 chat-box bg-white" id="chat_area">
+    <div class="col-lg-9 px-0 py-2">
+      <div class="px-4 py-5 chat-box" id="chat_area">
 
       </div>
 
       <!-- Typing area -->
-      <form action="#" class="bg-light">
-        <div class="input-group">
-          <input type="text" placeholder="Type a message" aria-describedby="button_send_message" class="form-control rounded-0 border-0 py-4 bg-light" id="id_message_send_input">
-          <div class="input-group-append">
-            <button id="button_send_message" type="submit" class="btn btn-link"> <i class="fa fa-paper-plane"></i></button>
+      <div class="px-2 pt-2">
+        <form action="#" class="bg-light border">
+          <div class="input-group">
+            <input type="text" placeholder="Type a message" aria-describedby="button_send_message" class="form-control rounded-0 border-0 py-4 bg-light" id="id_message_send_input">
+            <div class="input-group-append">
+              <button id="button_send_message" type="submit" class="btn btn-link">
+                <i class="fa fa-paper-plane"></i></button>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
 
     </div>
   </div>
@@ -122,11 +123,11 @@
           <div class="media w-50 mb-3" id="message-${message.id}">
           <img src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg" alt="user" width="50" class="rounded-circle">
             <div class="media-body ml-3">
-              <div class="bg-light rounded py-2 px-3 mb-2">
-                <p class="text-small mb-2 text-muted">${message.sender.username}</p>
-                <p class="text-small mb-0">${message.text}</p>
+              <div class="bg-light rounded border border-info py-2 px-3 mb-0 mt-0">
+                <p class="text-small mb-2 mt-0 text-muted">${message.sender.username}</p>
+                <p class="mb-0">${message.text}</p>
+                <p class="text-small mt-2 mb-0 text-muted">${message.timestamp}</p>
               </div>
-              <p class="small text-muted">${message.timestamp}</p>
             </div>
           </div>
         `
@@ -134,10 +135,10 @@
         child.innerHTML = `
           <div class="media w-50 ml-auto mb-3" id="message-${message.id}">
             <div class="media-body">
-              <div class="bg-primary rounded py-2 px-3 mb-2">
-                <p class="text-small mb-0 text-white">${message.text}</p>
+              <div class="bg-light rounded border border-success py-2 px-3 mb-0 mt-0">
+                <p class="mb-0">${message.text}</p>
+                <p class="text-small mt-2 mb-0 text-muted">${message.timestamp}</p>
               </div>
-              <p class="small text-muted">${message.timestamp}</p>
             </div>
           </div>
         `
@@ -181,7 +182,7 @@ body {
 
 .messages-box,
 .chat-box {
-  height: 510px;
+  height: 70vh;
   overflow-y: scroll;
 }
 
