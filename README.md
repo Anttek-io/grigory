@@ -44,9 +44,7 @@ Message history can be retrieved via REST API or WebSockets.
 > Grigory needs some pretty demo site. But I'm bad at frontend, so if you want to help,
 > please contact me at [rustam@astafeev.dev](mailto:rustam@astafeev.dev).
   
-|                                                    |                                                    |
-|:--------------------------------------------------:|:--------------------------------------------------:|
-| <img src="docs/media/demo-1.png" height="300px" /> | <img src="docs/media/demo-2.png" height="300px" /> |
+<img src="docs/media/demo-1.png" alt="demo"/>
   
 You can try the demo at [https://grigory-demo.anttek.io](https://grigory-demo.anttek.io).  
 To test it, open 2 tabs in your browser and login as 2 different users.  
