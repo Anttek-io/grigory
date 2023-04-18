@@ -45,6 +45,13 @@
       </div>
 
       <!-- Typing area -->
+      <div>
+        <div class="text-center">
+          <div class="spinner-border" id="chat-loader" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+      </div>
       <div class="px-4 py-2">
         <form action="#" class="bg-light border border-primary shadow">
           <div class="input-group">
@@ -78,6 +85,7 @@
     chatSocket.onopen = function (e) {
         console.log("The connection was setup successfully!");
         chatSocket.send(JSON.stringify({ action: "load_messages" }));
+        document.getElementById('chat-loader').style.display = 'none';
     };
 
     chatSocket.onclose = function (e) {
