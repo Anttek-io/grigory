@@ -1,74 +1,192 @@
-<!DOCTYPE html>
-<html lang="en">
-  <body>
-    <center><h1>Hello, {{request.user}}!</h1></center>
-    <br>
+{% extends '_partials/base.html' %}
+
+{% block contents %}
+<div class="container py-5 px-4">
+  <!-- For demo purpose-->
+  <header class="text-center">
+    <h1 class="display-4 text-white">Grigory Demo</h1>
+    <p class="text-white lead mb-0">Hello, {{ request.user }}</p>
     {% if request.user.is_authenticated  %}
-    <center> Logout the chat Page <a href = "{% url 'demo-logout' %}">Logout</a></center>
+    <p class="text-white lead mb-4">Logout the chat Page
+      <a href="{% url 'demo-logout' %}" class="text-white">
+        <u>Logout</u></a>
+    </p>
     {% endif %}
-    <div class="chat__item__container" id="id_chat_item_container" style="font-size: 20px">
-      <br />
-      <input type="text" id="id_message_send_input" aria-label=""/>
-      <button type="submit" id="id_message_send_button">Send Message</button>
-      <br />
-      <br />
+  </header>
+
+  <div class="row rounded-lg overflow-hidden shadow">
+    <!-- Users box-->
+    <div class="col-5 px-0">
+      <div class="bg-white">
+
+        <div class="bg-gray px-4 py-2 bg-light">
+          <p class="h5 mb-0 py-1">Chat list</p>
+        </div>
+
+        <div class="messages-box">
+          <div class="list-group rounded-0">
+            <a class="list-group-item list-group-item-action active text-white rounded-0">
+              <div class="media"><img src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg" alt="user" width="50" class="rounded-circle">
+                <div class="media-body ml-4">
+                  <div class="d-flex align-items-center justify-content-between mb-1">
+                    <h6 class="mb-0">Public Demo Chat</h6>
+<!--                    <small class="small font-weight-bold">25 Dec</small>-->
+                  </div>
+                  <p class="font-italic mb-0 text-small">@demo-public</p>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
-    <script>
-      if (window.location.protocol == "http:") {
+    <!-- Chat Box-->
+    <div class="col-7 px-0">
+      <div class="px-4 py-5 chat-box bg-white" id="chat_area">
+
+      </div>
+
+      <!-- Typing area -->
+      <form action="#" class="bg-light">
+        <div class="input-group">
+          <input type="text" placeholder="Type a message" aria-describedby="button_send_message" class="form-control rounded-0 border-0 py-4 bg-light" id="id_message_send_input">
+          <div class="input-group-append">
+            <button id="button_send_message" type="submit" class="btn btn-link"> <i class="fa fa-paper-plane"></i></button>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+<div>
+    <div class="chat__item__container" id="id_chat_item_container" style="font-size: 20px">
+</div>
+
+{% endblock %}
+
+{% block extra_javascript %}
+<script>
+    if (window.location.protocol == "http:") {
         var wsStart = "ws://";
-      } else {
+    } else {
         var wsStart = "wss://";
-      }
-      const chatSocket = new WebSocket(
-        wsStart + window.location.host + "/ws/chat?chat_slug=demo-public"
-      );
+    }
 
-      chatSocket.onopen = function (e) {
-        console.log("The connection was setup successfully !");
-      };
+    const chatSocket = new WebSocket(wsStart + window.location.host + "/ws/chat?chat_slug=demo-public");
 
-      chatSocket.onclose = function (e) {
+    var input = document.querySelector("#id_message_send_input");
+
+    chatSocket.onopen = function (e) {
+        console.log("The connection was setup successfully!");
+<!--        chatSocket.send(JSON.stringify({ action: "load_messages" }));-->
+    };
+
+    chatSocket.onclose = function (e) {
         console.log("Something unexpected happened !");
-      };
+    };
 
-      document.querySelector("#id_message_send_input").focus();
+    input.focus();
 
-      document.querySelector("#id_message_send_input").onkeyup = function (e) {
-        if (e.keyCode == 13) {
-          document.querySelector("#id_message_send_button").click();
-        }
-      };
-
-      document.querySelector("#id_message_send_button").onclick = function (e) {
-        var messageInput = document.querySelector(
-          "#id_message_send_input"
-        ).value;
+    document.querySelector("#button_send_message").onclick = function (e) {
+        var messageInput = document.querySelector("#id_message_send_input").value;
         chatSocket.send(JSON.stringify({ message: messageInput }));
-      };
+        input.value = "";
+    };
 
-      chatSocket.onmessage = function (e) {
-        const data = JSON.parse(e.data);
-
+    chatSocket.onmessage = function (e) {
+        var data = JSON.parse(e.data);
         if (data.type == "message") {
-          text = data.text;
-          sender = data.sender.username;
-          var div = document.createElement("div");
-          div.innerHTML = sender + ": " + text;
-          document.querySelector("#id_message_send_input").value = "";
-          document.querySelector("#id_chat_item_container").appendChild(div);
-        } else {
-          messages = data.messages;
-          offset = data.offset;
-          limit = data.limit;
-            for (var i = 0; i < messages.length; i++) {
-              message = messages[i].text;
-              sender = messages[i].sender.username;
-              var div = document.createElement("div");
-              div.innerHTML = sender + ": " + message;
-              document.querySelector("#id_chat_item_container").appendChild(div);
+          drawMessage(data);
+          } else {
+            var messages = data.messages;
+            var offset = data.offset;
+            var limit = data.limit;
+            for (var i = messages.length; i > 0; i--) {
+              var msg = messages[i - 1];
+              drawMessage(msg);
             }
           }
-      };
-    </script>
-  </body>
-</html>
+    };
+
+    drawMessage = function (message) {
+      var parent = document.querySelector("#chat_area");
+      var child = document.createElement("div");
+
+      if (message.sender.username !== `{{ request.user.username }}`) {
+        child.innerHTML = `
+          <div class="media w-50 mb-3"><img src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg" alt="user" width="50" class="rounded-circle">
+            <div class="media-body ml-3">
+              <div class="bg-light rounded py-2 px-3 mb-2">
+                <p class="text-small mb-2 text-muted">${message.sender.username}</p>
+                <p class="text-small mb-0">${message.text}</p>
+              </div>
+              <p class="small text-muted">${message.timestamp}</p>
+            </div>
+          </div>
+        `
+      } else {
+        child.innerHTML = `
+          <div class="media w-50 ml-auto mb-3">
+            <div class="media-body">
+              <div class="bg-primary rounded py-2 px-3 mb-2">
+                <p class="text-small mb-0 text-white">${message.text}</p>
+              </div>
+              <p class="small text-muted">${message.timestamp}</p>
+            </div>
+          </div>
+        `
+      }
+
+      parent.appendChild(child);
+
+    };
+
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+body {
+  background-color: #74EBD5;
+  background-image: linear-gradient(90deg, #74EBD5 0%, #9FACE6 100%);
+
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  width: 5px;
+  background: #f5f5f5;
+}
+
+::-webkit-scrollbar-thumb {
+  width: 1em;
+  background-color: #ddd;
+  outline: 1px solid slategrey;
+  border-radius: 1rem;
+}
+
+.text-small {
+  font-size: 0.9rem;
+}
+
+.messages-box,
+.chat-box {
+  height: 510px;
+  overflow-y: scroll;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+input::placeholder {
+  font-size: 0.9rem;
+  color: #999;
+}
+</style>
+{% endblock %}
