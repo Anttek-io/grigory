@@ -17,7 +17,7 @@
     <div class="col-sm-3 px-0 border-right">
       <div>
 
-        <div class="bg-gray px-4 py-2 bg-light">
+        <div class="bg-gray px-2 py-2 bg-light">
           <p class="h5 mb-0 py-1">Chat list</p>
         </div>
 
@@ -40,18 +40,18 @@
     </div>
     <!-- Chat Box-->
     <div class="col-lg-9 px-0 py-2">
-      <div class="px-4 py-5 chat-box" id="chat_area">
+      <div class="px-4 py-2 chat-box" id="chat_area">
 
       </div>
 
       <!-- Typing area -->
-      <div class="px-2 pt-2">
-        <form action="#" class="bg-light border">
+      <div class="px-4 py-2">
+        <form action="#" class="bg-light border border-primary shadow">
           <div class="input-group">
             <input type="text" placeholder="Type a message" aria-describedby="button_send_message" class="form-control rounded-0 border-0 py-4 bg-light" id="id_message_send_input">
             <div class="input-group-append">
               <button id="button_send_message" type="submit" class="btn btn-link">
-                <i class="fa fa-paper-plane"></i></button>
+                <i class="fa fa-paper-plane m-2"></i></button>
             </div>
           </div>
         </form>
@@ -59,9 +59,6 @@
 
     </div>
   </div>
-</div>
-<div>
-    <div class="chat__item__container" id="id_chat_item_container" style="font-size: 20px">
 </div>
 
 {% endblock %}
@@ -121,9 +118,8 @@
       if (message.sender.username !== `{{ request.user.username }}`) {
         child.innerHTML = `
           <div class="media w-50 mb-3" id="message-${message.id}">
-          <img src="https://www.svgrepo.com/download/498512/user.svg" alt="user" width="40" class="rounded-circle">
-            <div class="media-body ml-3">
-              <div class="bg-light rounded border border-info py-2 px-3 mb-0 mt-0">
+            <div class="media-body chadow ml-0">
+              <div class="bg-light rounded border border-secondary py-2 px-3 mb-0 mt-0">
                 <p class="text-small mb-2 mt-0 text-muted">${message.sender.username}</p>
                 <p class="mb-0">${message.text}</p>
                 <p class="text-small mt-2 mb-0 text-muted">${message.timestamp}</p>
@@ -134,8 +130,8 @@
       } else {
         child.innerHTML = `
           <div class="media w-50 ml-auto mb-3" id="message-${message.id}">
-            <div class="media-body">
-              <div class="bg-light rounded border border-success py-2 px-3 mb-0 mt-0">
+            <div class="media-body shadow">
+              <div class="bg-light rounded border border-info py-2 px-3 mb-0 mt-0">
                 <p class="mb-0">${message.text}</p>
                 <p class="text-small mt-2 mb-0 text-muted">${message.timestamp}</p>
               </div>
