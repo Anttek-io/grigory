@@ -65,6 +65,7 @@ services:
       start_period: 30s
     networks:
       - default
+      - postgres_default
       - traefik_default
   celery:
     image: harleyking/grigory:${TAG:-latest}
@@ -116,5 +117,7 @@ services:
 
 
 networks:
+  postgres_default:
+    external: true
   traefik_default:
     external: true
