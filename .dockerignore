@@ -22,3 +22,5 @@ README.md
 
 .env.example
 .env
+
+ .*_history
