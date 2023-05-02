@@ -18,7 +18,7 @@ django-cors-headers
 
 # Deployment
 gunicorn
-uvicorn[standard]~=0.21.1
+uvicorn
 whitenoise
 
 # Distributed async tasks
