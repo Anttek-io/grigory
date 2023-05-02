@@ -33,9 +33,9 @@ services:
     image: redis:alpine
   django:
     image: anttek/grigory:${TAG:-latest}
-    command: gunicorn --workers 1 --threads 1 --reload
     build:
       context: .
+      dockerfile: ${DOCKERFILE:-Dockerfile}
     depends_on:
       - redis
       - postgres
