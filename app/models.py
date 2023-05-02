@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core.serializers.json import DjangoJSONEncoder
+from django.core.validators import MinLengthValidator, MaxLengthValidator, RegexValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -29,7 +30,9 @@ class Chat(models.Model):
     )
     chat_type = models.CharField(max_length=7, choices=chat_type_choices, default='private')
 
-    slug = models.SlugField(max_length=32, unique=True, blank=True, null=True, default=None)
+    slug = models.SlugField(max_length=32, unique=True, blank=True, null=True, default=None,
+                            validators=[MinLengthValidator(3), MaxLengthValidator(32),
+                                        RegexValidator(r'^[a-zA-Z_]{3,32}$', _('Enter a valid slug.'))])
     members = models.JSONField(encoder=DjangoJSONEncoder, default=list)
 
     class Meta:

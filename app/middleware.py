@@ -1,3 +1,4 @@
+import re
 from urllib.parse import parse_qs
 from channels.middleware import BaseMiddleware
 from channels.db import database_sync_to_async
@@ -24,6 +25,22 @@ class ChatMiddleware(BaseMiddleware):
         chat_slug = query_params.get('chat_slug', [None])[0]
         chat_id = query_params.get('chat_id', [None])[0]
         if chat_slug:
+            match = re.match(r'^[a-zA-Z_]{3,32}$', chat_slug)
+            if not match:
+                await send({
+                    'type': 'websocket.accept',
+                    'status': 400,
+                    'headers': [
+                        [b'content-type', b'text/plain'],
+                    ],
+                })
+                await send({
+                    'type': 'websocket.send',
+                    'text': 'Invalid chat_slug',
+                })
+                return await send({
+                    'type': 'websocket.close',
+                })
             chat, _ = await database_sync_to_async(Chat.objects.get_or_create)(slug=chat_slug)
         elif chat_id:
             try:
