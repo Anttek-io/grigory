@@ -32,7 +32,7 @@ services:
   redis:
     image: redis:alpine
   django:
-    image: harleyking/grigory:${TAG:-latest}
+    image: anttek/grigory:${TAG:-latest}
     command: gunicorn --workers 1 --threads 1 --reload
     build:
       context: .
@@ -51,7 +51,7 @@ services:
     volumes:
       - .:/home/django
   celery:
-    image: harleyking/grigory:${TAG:-latest}
+    image: anttek/grigory:${TAG:-latest}
     command: celery -A core worker -l debug --concurrency 1 -P solo -E
     depends_on:
       django:
@@ -66,7 +66,7 @@ services:
     volumes:
       - .:/home/django
   celery-beat:
-    image: harleyking/grigory:${TAG:-latest}
+    image: anttek/grigory:${TAG:-latest}
     command: celery -A core beat -l debug
     depends_on:
       django:

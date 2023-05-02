@@ -26,7 +26,7 @@ services:
       restart_policy:
         condition: on-failure
   django:
-    image: harleyking/grigory:${TAG:-latest}
+    image: anttek/grigory:${TAG:-latest}
     deploy:
       replicas: 1
       restart_policy:
@@ -68,7 +68,7 @@ services:
       - postgres_default
       - traefik_default
   celery:
-    image: harleyking/grigory:${TAG:-latest}
+    image: anttek/grigory:${TAG:-latest}
     command: celery -A core worker -l debug --concurrency 1 -P solo -E
     deploy:
       replicas: 1
@@ -97,7 +97,7 @@ services:
       - default
       - postgres_default
   celery-beat:
-    image: harleyking/grigory:${TAG:-latest}
+    image: anttek/grigory:${TAG:-latest}
     command: celery -A core beat -l debug
     deploy:
       replicas: 1

@@ -11,7 +11,7 @@ You can import it to your Postman and start testing the API right away.
   
 ## Docker images
   
-[DockerHub Page](https://hub.docker.com/r/harleyking/grigory)  
+[DockerHub Page](https://hub.docker.com/r/anttek/grigory)  
   
 There are two versions of the image: base and `-oracle` version.  
 Difference between them is that `-oracle` version includes [cx_Oracle](https://pypi.org/project/cx-Oracle/) 

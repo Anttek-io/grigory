@@ -1,9 +1,9 @@
 # Grigory  
   
 [![Django CI](https://github.com/Anttek-io/grigory/actions/workflows/django.yml/badge.svg)](https://github.com/Anttek-io/grigory/actions/workflows/django.yml)
-[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/harleyking/grigory?sort=semver)](https://hub.docker.com/r/harleyking/grigory)
-[![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/harleyking/grigory?sort=semver)](https://hub.docker.com/r/harleyking/grigory)
-[![Docker Pulls](https://img.shields.io/docker/pulls/harleyking/grigory)](https://hub.docker.com/r/harleyking/grigory)  
+[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/anttek/grigory?sort=semver)](https://hub.docker.com/r/anttek/grigory)
+[![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/anttek/grigory?sort=semver)](https://hub.docker.com/r/anttek/grigory)
+[![Docker Pulls](https://img.shields.io/docker/pulls/anttek/grigory)](https://hub.docker.com/r/anttek/grigory)  
   
 Grigory is backend for notification service, real-time chats and microservices communication.  
 You don't need to implement all the logic for chats and notifications from scratch.  
