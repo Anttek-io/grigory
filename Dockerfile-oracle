@@ -1,47 +1,65 @@
-FROM python:3.10-slim-bullseye as oracle
+FROM python:3.10-alpine as instantclient
 
-RUN apt-get update && \
-    apt-get install -y wget unzip --no-install-recommends && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache curl
 
-RUN wget https://download.oracle.com/otn_software/linux/instantclient/219000/instantclient-basiclite-linux.x64-21.9.0.0.0dbru.zip && \
-    unzip instantclient-basiclite-linux.x64-21.9.0.0.0dbru.zip -d /opt/
-
-
-FROM python:3.10-slim-bullseye as base
-
-SHELL ["/bin/bash", "-c"]
-
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends libaio1 curl && \
-    rm -rf /var/lib/apt/lists/*
+RUN curl -o /tmp/instantclient-basiclite.zip https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linuxx64.zip -SL && \
+    unzip /tmp/instantclient-basiclite.zip -d / && \
+    mv /instantclient_* /instantclient
 
 
-FROM base as builder
+FROM python:3.10-alpine as base
+
+RUN addgroup -S -g 1000 django && \
+    adduser -S -G django -u 999 django && \
+    apk add --no-cache curl libaio libnsl gcompat && \
+    ln -sfv ld-linux-x86-64.so.2 /lib/libresolv.so.2 && \
+    chown django:django /lib/libresolv.so.2
+
+WORKDIR /home/django
+
+
+FROM base as wheels
+
+RUN apk add --no-cache gcc musl-dev python3-dev libaio-dev
 
 COPY requirements.txt .
 
+RUN pip wheel --no-cache-dir cx_oracle==8.3.0 -w /wheels && \
+    pip wheel --no-cache-dir -r requirements.txt -w /wheels
+
+
+FROM base as requirements
+
+COPY requirements.txt .
+
+COPY --from=wheels /wheels /wheels
+
 RUN python -m venv /venv && \
-    source /venv/bin/activate && \
-    pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir cx_Oracle==8.3.0
+    . /venv/bin/activate && \
+    pip install --no-cache-dir -U setuptools && \
+    pip install --no-cache-dir --no-index --find-links=/wheels cx_oracle==8.3.0 && \
+    pip install --no-cache-dir --no-index --find-links=/wheels -r requirements.txt
+
+
+FROM base as source-code
+
+COPY . .
+
+RUN rm -fr requirements.txt
 
 
 FROM base
 
-WORKDIR /home/django
-
-COPY --from=builder /venv /venv
-
-COPY --from=oracle /opt/instantclient_21_9 /opt/instantclient_21_9
-
-ENV PATH="/venv/bin:$PATH"
+COPY --from=requirements /venv /venv
+COPY --from=source-code --chown=django:django /home/django /home/django
+COPY --from=instantclient --chown=django:django /instantclient /opt/instantclient
 
 ENV PYTHONUNBUFFERED 1
+ENV PATH="/venv/bin:$PATH"
+ENV LD_LIBRARY_PATH=/opt/instantclient
+ENV ORACLE_HOME=/opt/instantclient
 
-ENV LD_LIBRARY_PATH=/opt/instantclient_21_9
-
-COPY . .
+USER django
 
 RUN chmod +x /home/django/entrypoint.sh
 

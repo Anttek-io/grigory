@@ -1,32 +1,39 @@
-FROM python:3.10-slim-bullseye as base
+FROM python:3.10-alpine as base
 
-SHELL ["/bin/bash", "-c"]
+ENV PYTHONUNBUFFERED 1
+ENV PATH="/venv/bin:$PATH"
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl &&  \
-    rm -rf /var/lib/apt/lists/*
+RUN addgroup -S -g 1000 django && \
+    adduser -S -G django -u 999 django && \
+    apk add --no-cache curl
+
+WORKDIR /home/django
 
 
-FROM base as builder
+FROM base as requirements
 
 COPY requirements.txt .
 
 RUN python -m venv /venv && \
-    source /venv/bin/activate && \
+    . /venv/bin/activate && \
+    pip install --no-cache-dir -U setuptools && \
     pip install --no-cache-dir -r requirements.txt
+
+
+FROM base as source-code
+
+COPY . .
+
+RUN rm -fr requirements.txt
 
 
 FROM base
 
-WORKDIR /home/django
+COPY --from=requirements /venv /venv
 
-COPY --from=builder /venv /venv
+USER django
 
-ENV PATH="/venv/bin:$PATH"
-
-ENV PYTHONUNBUFFERED 1
-
-COPY . .
+COPY --from=source-code --chown=django:django /home/django /home/django
 
 RUN chmod +x /home/django/entrypoint.sh
 
