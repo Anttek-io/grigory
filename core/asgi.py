@@ -13,11 +13,9 @@ import django
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
 from django.core.asgi import get_asgi_application
-from django.urls import path
 from uvicorn.workers import UvicornWorker as BaseUvicornWorker
 
 from core.middleware import WebSocketHealthCheckMiddleware
-from core.settings import DJANGO_BASE_PATH
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
@@ -25,7 +23,7 @@ django.setup()
 
 from authentication.middleware import AuthMiddlewareStack
 from app.middleware import ChatMiddleware
-from core.routing import root_routing
+from core.routing import urlpatterns as root_routing
 
 # Initialize Django ASGI application early to ensure the AppRegistry
 # is populated before importing code that may import ORM models.
@@ -40,9 +38,7 @@ application = ProtocolTypeRouter({
         AllowedHostsOriginValidator(
             ChatMiddleware(
                 AuthMiddlewareStack(
-                    URLRouter([
-                        path(DJANGO_BASE_PATH + 'ws/', root_routing),
-                    ])
+                    URLRouter(root_routing)
                 )
             )
         )
