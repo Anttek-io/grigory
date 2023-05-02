@@ -6,6 +6,15 @@ RUN curl -o /tmp/instantclient-basiclite.zip https://download.oracle.com/otn_sof
     unzip /tmp/instantclient-basiclite.zip -d / && \
     mv /instantclient_* /instantclient
 
+RUN echo -e '\
+DIAG_ADR_ENABLED = OFF\n\
+TRACE_LEVEL_CLIENT = OFF\n\
+TRACE_DIRECTORY_CLIENT=/dev/null\n\
+LOG_DIRECTORY_CLIENT = /dev/null\n\
+LOG_FILE_CLIENT = /dev/null\n\
+LOG_LEVEL_CLIENT = OFF\n\
+' > /instantclient/network/admin/sqlnet.ora
+
 
 FROM python:3.10-alpine as base
 
@@ -57,7 +66,6 @@ COPY --from=instantclient --chown=django:django /instantclient /opt/instantclien
 ENV PYTHONUNBUFFERED 1
 ENV PATH="/venv/bin:$PATH"
 ENV LD_LIBRARY_PATH=/opt/instantclient
-ENV ORACLE_HOME=/opt/instantclient
 
 USER django
 

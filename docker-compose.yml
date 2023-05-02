@@ -2,6 +2,7 @@ version: '3.9'
 
 
 x-environment: &environment
+  ALLOW_ROOT: ${ALLOW_ROOT:-True}
   DJANGO_DEBUG: ${DJANGO_DEBUG:-True}
   DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-}
   DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-}
@@ -48,6 +49,7 @@ services:
       start_period: 30s
     ports:
       - "${DJANGO_WEB_PORT:-}:8000"
+    user: root
     volumes:
       - .:/home/django
   celery:
@@ -63,6 +65,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+    user: root
     volumes:
       - .:/home/django
   celery-beat:
@@ -73,6 +76,7 @@ services:
         condition: service_healthy
     entrypoint: []
     environment: *environment
+    user: root
     volumes:
       - .:/home/django
 

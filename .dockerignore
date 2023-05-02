@@ -24,3 +24,4 @@ README.md
 .env
 
  .*_history
+.cache
