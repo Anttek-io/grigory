@@ -16,7 +16,7 @@ def get_serializer_data(instance, many=False):
     return serializer.data
 
 
-class ChatConsumer(AsyncWebsocketConsumer):
+class ConversationConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.chat = None

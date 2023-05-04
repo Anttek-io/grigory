@@ -1,3 +1,4 @@
+import logging
 import re
 from urllib.parse import parse_qs
 from channels.middleware import BaseMiddleware
@@ -61,4 +62,9 @@ class ChatMiddleware(BaseMiddleware):
             return await return_error(send, 400, _('Invalid query params'))
         scope['chat'] = chat
         scope['friend'] = friend
-        return await super().__call__(scope, receive, send)
+        try:
+            return await super().__call__(scope, receive, send)
+        except Exception as e:
+            logging.error(e)
+            # TODO: handle all exceptions and return correct status code and message
+            return await return_error(send, 503, _('Unavailable'))
