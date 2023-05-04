@@ -4,29 +4,30 @@ python-dotenv~=1.0.0
 # Django
 Django==3.2
 djangorestframework
-django-filter
+django-filter==23.2
 
 # Microservices
 dj-ms-auth-router==1.5.1
 
 # Database
 psycopg2-binary
-dj_database_url
+dj_database_url==2.0.0
 
 # Security
 django-cors-headers
 
 # Deployment
 gunicorn
-uvicorn
+uvicorn[standard]==0.22.0
 whitenoise
 
 # Distributed async tasks
 celery
-redis
 django-celery-beat
-django-celery-results
 
 # Channels
 channels
 channels_redis
+
+# Redis - needed both for channels and celery
+redis

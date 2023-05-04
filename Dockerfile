@@ -39,6 +39,4 @@ RUN chmod +x /home/django/entrypoint.sh
 
 ENTRYPOINT ["/home/django/entrypoint.sh"]
 
-CMD ["gunicorn"]
-
 EXPOSE 8000
