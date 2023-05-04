@@ -41,7 +41,10 @@ class ChatMiddleware(BaseMiddleware):
         user_id = query_params.get('user_id', [None])[0]
         if chat_slug:
             if re.match(CHAT_SLUG_REGEX, chat_slug):
-                chat = await database_sync_to_async(Chat.objects.get)(slug=chat_slug)
+                try:
+                    chat = await database_sync_to_async(Chat.objects.get)(slug=chat_slug, members=scope['user'])
+                except Chat.DoesNotExist:
+                    return await return_error(send, 404, _('Chat not found'))
             else:
                 return await return_error(send, 400, _('Invalid chat slug'))
         elif chat_id:
