@@ -1,11 +1,10 @@
 import json
-import logging
 
 from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-from app.models import Message
+from app.models import Message, Chat, CHAT_TYPE_PRIVATE
 from app.serializers.messages import MessageSerializer
 
 MESSAGES_LIMIT = 10
@@ -17,14 +16,37 @@ def get_serializer_data(instance, many=False):
     return serializer.data
 
 
-class ChatConsumer(AsyncWebsocketConsumer):
+class ConversationConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
-        self.user = None
         self.chat = None
+        self.friend = None
+        self.user = None
         self.message = None
+        self.group_name = None
+        self.group_args = None
+
+    async def __call__(self, *args, **kwargs):
+        self.user = args[0].get('user')
+        self.chat = args[0].get('chat')
+        self.friend = args[0].get('friend')
+        self.group_name = f'user_{self.user.id}'
+        if not self.chat and self.friend:
+            try:
+                self.chat = await database_sync_to_async(self.user.chats.get)(members=self.friend,
+                                                                              chat_type=CHAT_TYPE_PRIVATE)
+            except Chat.DoesNotExist:
+                pass
+        await super().__call__(*args, **kwargs)
 
     async def create_message(self, message):
+        if not self.chat and self.friend:
+            self.chat = await database_sync_to_async(Chat.objects.create)(chat_type=CHAT_TYPE_PRIVATE,
+                                                                          creator=self.user)
+            await database_sync_to_async(self.chat.members.add)(self.user)
+            if self.user != self.friend:
+                await database_sync_to_async(self.chat.members.add)(self.friend)
+            self.group_name = f'chat_{self.chat.id}'
         return await database_sync_to_async(Message.objects.create)(
             chat=self.chat,
             text=message,
@@ -32,20 +54,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     async def connect(self):
-        self.user = self.scope['user']
-        self.chat = self.scope['chat']
-        await self.channel_layer.group_add(
-            self.chat.slug,
-            self.channel_name
-        )
+        self.group_args = (self.group_name, self.channel_name)
+        await self.channel_layer.group_add(*self.group_args)
         await self.accept()
         await self.send_message_list()
 
     async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(
-            self.chat.slug,
-            self.channel_name
-        )
+        await self.channel_layer.group_discard(*self.group_args)
 
     async def receive(self, text_data=None, bytes_data=None):
         try:
@@ -63,13 +78,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             data = {'type': 'message'}
             serializer_data = await sync_to_async(get_serializer_data)(self.message)
             data.update(serializer_data)
-            await self.channel_layer.group_send(
-                self.chat.slug,
-                {
-                    'type': 'chat_message',
-                    'data': data
-                }
-            )
+            await self.channel_layer.group_send(self.group_name, {'type': 'chat_message', 'data': data})
 
     async def chat_message(self, event):
         assert event.get('data'), 'Data is required'
@@ -85,13 +94,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'total': total,
             'messages': messages
         }
-        await self.channel_layer.group_send(
-            self.chat.slug,
-            {
-                'type': 'chat_message',
-                'data': data
-            }
-        )
+        await self.channel_layer.group_send(self.group_name, {'type': 'chat_message', 'data': data})
 
     @database_sync_to_async
     def get_messages(self, offset=0, limit=MESSAGES_LIMIT):

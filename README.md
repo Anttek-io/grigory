@@ -6,8 +6,6 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/anttek/grigory)](https://hub.docker.com/r/anttek/grigory)  
   
 Grigory is backend for notification service, real-time chats and microservices communication.  
-You don't need to implement all the logic for chats and notifications from scratch.  
-For example, you can just run Grigory and use it as backend for your chat and notifications.  
 It's built on top of Django and Django Channels.  
 It's designed to be used as a microservice in a microservice architecture, 
 but can be used as a standalone service as well.  
@@ -19,10 +17,6 @@ It provides both REST API and WebSockets for clients and microservices.
   
 Everybody who wants to implement chat and notifications in their project.  
 For example, frontend developers who needs chat and/or notifications functionality.  
-Or backend developers who need to implement chat and notifications in their project.
-> If you're main backend is made on Django, you can use Grigory as a part of your microservice architecture.  
-> Just add `AUTH_DB_URL` environment variable that points to your main Django database.  
-> After that Grigory will use your main Django database for authentication.  
   
 ---
   
@@ -68,9 +62,11 @@ WebSockets are available at `wss://grigory-demo.anttek.io/ws`.
 
 ## Features to be implemented
 
-- [ ] Chat management
+- [ ] Chat management (creating, updating, deleting, adding and removing members, etc.)
 - [ ] Using system events as messages in chats
 - [ ] Marking messages as read by concrete user
+- [ ] JWT authentication
+- [ ] Support for file attachments
   
 ---
   

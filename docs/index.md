@@ -7,7 +7,6 @@
   
 Grigory is backend for notification service, real-time chats and microservices communication.  
 You don't need to implement all the logic for chats and notifications from scratch.  
-For example, you can just run Grigory and use it as backend for your chat and notifications.  
 It's built on top of Django and Django Channels.  
 It's designed to be used as a microservice in a microservice architecture, 
 but can be used as a standalone service as well.  
@@ -19,10 +18,6 @@ It provides both REST API and WebSockets for clients and microservices.
   
 Everybody who wants to implement chat and notifications in their project.  
 For example, frontend developers who needs chat and/or notifications functionality.  
-Or backend developers who need to implement chat and notifications in their project.
-> If you're main backend is made on Django, you can use Grigory as a part of your microservice architecture.  
-> Just add `AUTH_DB_URL` environment variable that points to your main Django database.  
-> After that Grigory will use your main Django database for authentication.  
   
 ---
   
@@ -32,7 +27,7 @@ Or backend developers who need to implement chat and notifications in their proj
   
 1. Any microservice or client just sends some message via REST API or WebSockets 
 with the indication of the chat it belongs to.
-If specified chat doesn't exist, it's created automatically.
+If message was sent to another user, the chat will be created automatically after the first message.
 2. This message first goes to queue to avoid overloading the database.  
 3. Then it's processed by the worker and saved to the database.  
 4. After that, the message is sent to real-time chat via WebSockets.

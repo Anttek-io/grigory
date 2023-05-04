@@ -30,7 +30,7 @@
                     <h6 class="mb-0">Public Demo Chat</h6>
 <!--                    <small class="small font-weight-bold">25 Dec</small>-->
                   </div>
-                  <p class="font-italic mb-0 text-small">@demo-public</p>
+                  <p class="font-italic mb-0 text-small">@demo_public</p>
                 </div>
               </div>
             </a>
@@ -78,7 +78,7 @@
         var wsStart = "wss://";
     }
 
-    const chatSocket = new WebSocket(wsStart + window.location.host + "/ws/chat?chat_slug=demo-public");
+    const chatSocket = new WebSocket(wsStart + window.location.host + "/ws/conversation?chat_slug=demo_public");
 
     var input = document.querySelector("#id_message_send_input");
 

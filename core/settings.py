@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     # Third party apps
     'ms_auth_router',
     'rest_framework',
+    'django_filters',
     'django_celery_beat',
     'corsheaders',
 
