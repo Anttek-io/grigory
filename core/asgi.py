@@ -24,7 +24,6 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 django.setup()
 
 from authentication.middleware import AuthMiddlewareStack
-from app.middleware import ChatMiddleware
 from core.routing import root_routing
 
 # Initialize Django ASGI application early to ensure the AppRegistry
@@ -39,11 +38,9 @@ application = ProtocolTypeRouter({
     "websocket": WebSocketHealthCheckMiddleware(
         AllowedHostsOriginValidator(
             AuthMiddlewareStack(
-                ChatMiddleware(
-                    URLRouter([
-                        path(DJANGO_BASE_PATH + 'ws/', root_routing),
-                    ])
-                )
+                URLRouter([
+                    path(DJANGO_BASE_PATH + 'ws/', root_routing),
+                ])
             )
         )
     )

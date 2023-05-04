@@ -9,6 +9,7 @@ class ChatAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'slug')
     list_filter = ('chat_type',)
     search_fields = ('id', 'slug')
+    readonly_fields = ('chat_type',)
 
 
 @admin.register(Message)
@@ -17,3 +18,4 @@ class MessageAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'chat')
     list_filter = ('timestamp', )
     search_fields = ('id', 'sender_id', 'text')
+    readonly_fields = ('sender_id', 'chat', 'seen', 'sender')
