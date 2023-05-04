@@ -89,7 +89,7 @@
     };
 
     chatSocket.onclose = function (e) {
-        console.log("Something unexpected happened !");
+        console.log("Connection was closed.");
     };
 
     input.focus();
@@ -101,7 +101,14 @@
     };
 
     chatSocket.onmessage = function (e) {
-        var data = JSON.parse(e.data);
+        try {
+          var data = JSON.parse(e.data);
+        } catch (err) {
+          console.log("Something went wrong with the data received from the server !");
+          console.log(e.data);
+          console.log(err);
+          return;
+        }
         if (data.type == "message") {
           drawMessage(data);
           } else {

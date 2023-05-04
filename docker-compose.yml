@@ -2,7 +2,6 @@ version: '3.9'
 
 
 x-environment: &environment
-  ALLOW_ROOT: ${ALLOW_ROOT:-True}
   DJANGO_DEBUG: ${DJANGO_DEBUG:-True}
   DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-}
   DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-}
@@ -32,6 +31,8 @@ services:
       - postgres_data:/var/lib/postgresql/data/
   redis:
     image: redis:alpine
+    volumes:
+      - redis_data:/data
   django:
     image: anttek/grigory:${TAG:-latest}
     build:
@@ -83,3 +84,4 @@ services:
 
 volumes:
   postgres_data:
+  redis_data:

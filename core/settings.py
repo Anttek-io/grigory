@@ -72,7 +72,6 @@ INSTALLED_APPS = [
     'ms_auth_router',
     'rest_framework',
     'django_celery_beat',
-    'django_celery_results',
     'corsheaders',
 
     # Local apps
@@ -188,36 +187,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Redis settings
-
-REDIS_URL = getenv('REDIS_URL')
-
-BROKER_URL = f'{REDIS_URL}/0'
-
-# Celery settings
-
-CELERY_BROKER_URL = BROKER_URL
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_CACHE_BACKEND = 'django-cache'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = TIME_ZONE
-CELERY_TASK_DEFAULT_QUEUE = 'default'
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
-
-# Channels settings
-
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [REDIS_URL],
-        },
-    },
-}
-
 # Django REST Framework settings
+# https://www.django-rest-framework.org/api-guide/settings/
 
 REST_AUTH_TOKEN_MODEL = 'authentication.Token'
 
@@ -245,11 +216,42 @@ REST_FRAMEWORK = {
 
 REST_EXPOSE_AUTH_API = getenv('DJANGO_REST_EXPOSE_AUTH_API', True)
 
+# Redis settings
+
+REDIS_URL = getenv('REDIS_URL')
+
+BROKER_URL = f'{REDIS_URL}/0'
+
+# Celery settings
+# https://docs.celeryproject.org/en/stable/userguide/configuration.html
+
+CELERY_BROKER_URL = BROKER_URL
+CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_DEFAULT_QUEUE = 'default'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+# Channels settings
+# https://channels.readthedocs.io/en/stable/
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [REDIS_URL],
+        },
+    },
+}
+
 # Misc
 
 EXPOSE_DEMO_SITE = getenv('DJANGO_EXPOSE_DEMO_SITE', True)
 
 # Auth settings
+# https://docs.djangoproject.com/en/4.1/ref/settings/#auth
 
 LOGIN_URL = '/admin/login/'
 
