@@ -38,8 +38,8 @@ application = ProtocolTypeRouter({
     # WebSocket chat handler
     "websocket": WebSocketHealthCheckMiddleware(
         AllowedHostsOriginValidator(
-            ChatMiddleware(
-                AuthMiddlewareStack(
+            AuthMiddlewareStack(
+                ChatMiddleware(
                     URLRouter([
                         path(DJANGO_BASE_PATH + 'ws/', root_routing),
                     ])

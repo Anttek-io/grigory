@@ -3,6 +3,7 @@ from urllib.parse import parse_qs
 from channels.middleware import BaseMiddleware
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
 
 from app.models import Chat, CHAT_SLUG_REGEX
 
@@ -42,19 +43,19 @@ class ChatMiddleware(BaseMiddleware):
             if re.match(CHAT_SLUG_REGEX, chat_slug):
                 chat = await database_sync_to_async(Chat.objects.get)(slug=chat_slug)
             else:
-                await return_error(send, 400, 'Invalid chat slug')
+                return await return_error(send, 400, _('Invalid chat slug'))
         elif chat_id:
             try:
-                chat = await database_sync_to_async(Chat.objects.get)(id=chat_id)
+                chat = await database_sync_to_async(Chat.objects.get)(id=chat_id, members=scope['user'])
             except Chat.DoesNotExist:
-                await return_error(send, 404, 'Chat does not exist')
+                return await return_error(send, 404, _('Chat not found'))
         elif user_id:
             try:
                 friend = await database_sync_to_async(User.objects.get)(id=user_id)
             except User.DoesNotExist:
-                await return_error(send, 404, 'User does not exist')
+                return await return_error(send, 404, _('User not found'))
         else:
-            await return_error(send, 400, 'No chat slug, chat id or user id provided')
+            return await return_error(send, 400, _('Invalid query params'))
         scope['chat'] = chat
         scope['friend'] = friend
         return await super().__call__(scope, receive, send)
