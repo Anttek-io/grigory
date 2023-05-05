@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib import admin
 
-from app.models import Chat, Message, CHAT_TYPE_PRIVATE, validate_chat_member, ChatMember
+from app.models import Chat, Message, CHAT_TYPE_PRIVATE, validate_chat_member, ChatMember, CHAT_ROLE_ADMIN
 
 
 class ChatMemberForm(forms.models.BaseInlineFormSet):
@@ -28,6 +28,14 @@ class ChatAdmin(admin.ModelAdmin):
     search_fields = ('id', 'slug')
     readonly_fields = ('creator',)
     inlines = (ChatMemeberInline,)
+
+    def save_model(self, request, obj, form, change):
+        new_obj = not obj.pk
+        if new_obj:
+            obj.creator = request.user
+        super().save_model(request, obj, form, change)
+        if new_obj:
+            obj.members.create(user=request.user, role=CHAT_ROLE_ADMIN)
 
     def get_readonly_fields(self, request, obj=None):
         fields = super().get_readonly_fields(request, obj)
