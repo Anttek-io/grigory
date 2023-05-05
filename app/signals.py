@@ -16,6 +16,4 @@ def message_post_save(sender, instance, created, **kwargs):
     data = {'type': 'message'}
     serializer_data = get_serializer_data(instance)
     data.update(serializer_data)
-    print(group_name)
-    print(data)
     async_to_sync(channel_layer.group_send)(group_name, {'type': 'chat_message', 'data': data})
