@@ -6,6 +6,7 @@ from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from app.models import Message, Chat, CHAT_TYPE_PRIVATE, CHAT_SLUG_REGEX
@@ -36,9 +37,9 @@ class ConversationConsumer(AsyncWebsocketConsumer):
         if not self.chat and self.friend:
             self.chat = await database_sync_to_async(Chat.objects.create)(chat_type=CHAT_TYPE_PRIVATE,
                                                                           creator=self.user)
-            await database_sync_to_async(self.chat.members.add)(self.user)
+            await database_sync_to_async(self.chat.members.create)(user=self.user)
             if self.user != self.friend:
-                await database_sync_to_async(self.chat.members.add)(self.friend)
+                await database_sync_to_async(self.chat.members.create)(user=self.friend)
             await self.switch_group(f'chat_{self.chat.id}')
         return await database_sync_to_async(Message.objects.create)(
             chat=self.chat,
@@ -86,8 +87,11 @@ class ConversationConsumer(AsyncWebsocketConsumer):
             return await self.return_error(400, _('Invalid query params'))
         if not self.chat and self.friend:
             try:
-                self.chat = await database_sync_to_async(self.user.chats.get)(members__user=self.friend,
-                                                                              chat_type=CHAT_TYPE_PRIVATE)
+                self.chat = await database_sync_to_async(Chat.objects.get)(Q(
+                    Q(chat_type=CHAT_TYPE_PRIVATE) &
+                    Q(members__user=self.user) &
+                    Q(members__user=self.friend)
+                ))
             except Chat.DoesNotExist:
                 pass
         await self.accept()
