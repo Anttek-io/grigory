@@ -1,12 +1,11 @@
 import json
+import logging
 import re
 from urllib.parse import parse_qs
 
-from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth import get_user_model
-from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from app.models import Message, Chat, CHAT_TYPE_PRIVATE, CHAT_SLUG_REGEX
@@ -96,7 +95,7 @@ class ConversationConsumer(AsyncWebsocketConsumer):
         self.group_args = (self.group_name, self.channel_name)
         await self.channel_layer.group_add(*self.group_args)
         await self.accept()
-        await self.send_message_list()
+        logging.debug(f'User {self.user} connected to {self.group_name}.')
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(*self.group_args)

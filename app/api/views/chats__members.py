@@ -2,7 +2,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.generics import get_object_or_404
 
 from app.models import ChatMember, Chat, CHAT_ROLE_ADMIN, CHAT_TYPE_PRIVATE
-from app.serializers.chats__members import ChatMemberSerializer
+from app.serializers.chat_members import ChatMemberSerializer
 
 
 class IsChatAdmin(permissions.BasePermission):
