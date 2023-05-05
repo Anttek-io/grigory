@@ -10,7 +10,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
     def get_chat_queryset(self):
         if self.context.get('request'):
-            return self.context['request'].user.chats.all()
+            return Chat.objects.filter(members__user=self.context['request'].user)
         return Chat.objects.none()
 
     def get_extra_kwargs(self):
