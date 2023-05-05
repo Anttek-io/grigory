@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions
 from rest_framework.generics import get_object_or_404
 
-from app.models import ChatMember, Chat, CHAT_ROLE_ADMIN
+from app.models import ChatMember, Chat, CHAT_ROLE_ADMIN, CHAT_TYPE_PRIVATE
 from app.serializers.chats__members import ChatMemberSerializer
 
 
@@ -11,7 +11,9 @@ class IsChatAdmin(permissions.BasePermission):
             return True
         chat_id = view.kwargs.get('chat_id')
         obj = get_object_or_404(Chat, id=chat_id)
-        return obj.members.filter(user=request.user, chatmember__role=CHAT_ROLE_ADMIN).exists()
+        if obj.chat_type == CHAT_TYPE_PRIVATE:
+            return True
+        return obj.members.filter(user=request.user, role=CHAT_ROLE_ADMIN).exists()
 
 
 class ChatMembersViewSet(viewsets.ModelViewSet):

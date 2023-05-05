@@ -1,11 +1,11 @@
-from app.models import Chat, CHAT_TYPE_PRIVATE, CHAT_TYPE_GROUP
 from rest_framework import serializers
-from django.utils.translation import gettext_lazy as _
 
+from app.models import Chat
+from app.serializers.base import BaseSerializer
 from app.serializers.users import UserSerializer
 
 
-class ChatSerializer(serializers.ModelSerializer):
+class ChatSerializer(BaseSerializer):
     creator = UserSerializer(read_only=True)
     members_count = serializers.IntegerField(read_only=True)
 
@@ -17,7 +17,8 @@ class ChatSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chat
-        exclude = ('members',)
+        fields = '__all__'
+        create_only_fields = ('chat_type',)
 
 
 class ChatListSerializer(ChatSerializer):

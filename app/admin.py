@@ -31,6 +31,8 @@ class ChatAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         fields = super().get_readonly_fields(request, obj)
+        if obj:
+            fields = fields + ('chat_type',)
         if obj and obj.chat_type == CHAT_TYPE_PRIVATE:
             fields = fields + ('slug', 'public')
         return fields
