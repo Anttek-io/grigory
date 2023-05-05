@@ -112,11 +112,11 @@
         if (data.type == "message") {
           drawMessage(data);
           } else {
-            var messages = data.messages;
+            var results = data.results;
             var offset = data.offset;
             var limit = data.limit;
-            for (var i = messages.length; i > 0; i--) {
-              var msg = messages[i - 1];
+            for (var i = results.length; i > 0; i--) {
+              var msg = results[i - 1];
               drawMessage(msg);
             }
           }

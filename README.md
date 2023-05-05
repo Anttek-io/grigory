@@ -64,8 +64,9 @@ WebSockets are available at `wss://grigory-demo.anttek.io/ws`.
 
 ## Features to be implemented
 
-- [ ] Using system events as messages in chats
 - [ ] Marking messages as read by concrete user
+- [ ] Show unread messages count in chat list
+- [ ] Using system events as messages in chats
 - [ ] JWT authentication
   
 ---

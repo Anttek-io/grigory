@@ -13,7 +13,7 @@ def send_message_to_ws(message):
     data = {'type': 'message'}
     serializer_data = get_serializer_data(message)
     data.update(serializer_data)
-    async_to_sync(channel_layer.group_send)(group_name, {'type': 'chat_message', 'data': data})
+    async_to_sync(channel_layer.group_send)(group_name, {'type': 'message', 'data': data})
 
 
 @receiver(pre_save, sender=Message)
