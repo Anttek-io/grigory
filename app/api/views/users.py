@@ -7,9 +7,9 @@ from app.serializers.users import UserSerializer
 User = get_user_model()
 
 
-class UserViewSet(mixins.RetrieveModelMixin,
-                  mixins.ListModelMixin,
-                  GenericViewSet):
+class UsersViewSet(mixins.RetrieveModelMixin,
+                   mixins.ListModelMixin,
+                   GenericViewSet):
     model = User
     serializer_class = UserSerializer
     queryset = User.objects.all()

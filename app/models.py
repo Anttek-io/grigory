@@ -11,6 +11,16 @@ CHAT_SLUG_REGEX = r'^[a-zA-Z_]{3,32}$'
 CHAT_TYPE_PRIVATE = 'private'
 CHAT_TYPE_GROUP = 'group'
 
+CHAT_ROLE_ADMIN = 'admin'
+CHAT_ROLE_MODERATOR = 'moderator'
+CHAT_ROLE_MEMBER = 'member'
+
+CHAT_ROLES = (
+    (CHAT_ROLE_ADMIN, _('Admin')),
+    (CHAT_ROLE_MODERATOR, _('Moderator')),
+    (CHAT_ROLE_MEMBER, _('Member')),
+)
+
 
 def validate_chat(data):
     chat_type = data.get('chat_type')
@@ -28,6 +38,25 @@ class BaseMessage(models.Model):
         abstract = True
 
 
+class ChatMember(models.Model):
+    chat = models.ForeignKey('Chat', models.CASCADE)
+    user = models.ForeignKey(User, models.CASCADE)
+    role = models.CharField(max_length=9, choices=CHAT_ROLES, default=CHAT_ROLE_MEMBER, blank=True, null=True)
+
+    class Meta:
+        unique_together = ('chat', 'user')
+
+    def save(self, *args, **kwargs):
+        if self.chat.chat_type == CHAT_TYPE_PRIVATE:
+            self.role = None
+        elif self.chat.creator == self.user and \
+                (not self.role or not self.chat.members.filter(chatmember__role=CHAT_ROLE_ADMIN).exists()):
+            self.role = CHAT_ROLE_ADMIN
+        elif not self.role:
+            self.role = CHAT_ROLE_MEMBER
+        super().save(*args, **kwargs)
+
+
 class Chat(models.Model):
     chat_type_choices = (
         (CHAT_TYPE_PRIVATE, _('Private')),
@@ -39,7 +68,7 @@ class Chat(models.Model):
     slug = models.SlugField(max_length=32, unique=True, blank=True, null=True, default=None,
                             validators=[MinLengthValidator(3), MaxLengthValidator(32),
                                         RegexValidator(CHAT_SLUG_REGEX, _('Enter a valid slug.'))])
-    members = models.ManyToManyField(User, related_name='chats')
+    members = models.ManyToManyField(User, related_name='chats', through=ChatMember)
     creator = models.ForeignKey(User, models.RESTRICT, related_name='created_chats')
 
     class Meta:

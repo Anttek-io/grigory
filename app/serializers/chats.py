@@ -6,9 +6,6 @@ from app.serializers.users import UserSerializer
 
 
 class ChatSerializer(serializers.ModelSerializer):
-    # chat_type_choices = Chat.chat_type_choices
-    # except_private = list(i[0] for i in chat_type_choices if i[0] != CHAT_TYPE_PRIVATE)
-    # chat_type = serializers.ChoiceField(choices=except_private, default=CHAT_TYPE_GROUP)
     creator = UserSerializer(read_only=True)
     members_count = serializers.IntegerField(read_only=True)
 

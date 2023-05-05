@@ -15,6 +15,11 @@ class ChatForm(forms.ModelForm):
         return data
 
 
+class ChatMemeberInline(admin.TabularInline):
+    model = Chat.members.through
+    extra = 0
+
+
 @admin.register(Chat)
 class ChatAdmin(admin.ModelAdmin):
     list_display = ('id', 'slug', 'chat_type')
@@ -23,6 +28,7 @@ class ChatAdmin(admin.ModelAdmin):
     search_fields = ('id', 'slug')
     readonly_fields = ('creator',)
     form = ChatForm
+    inlines = (ChatMemeberInline,)
 
     def get_readonly_fields(self, request, obj=None):
         fields = super().get_readonly_fields(request, obj)
