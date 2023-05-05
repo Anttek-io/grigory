@@ -14,5 +14,5 @@ class ChatsViewSet(viewsets.ModelViewSet):
         return super().get_serializer_class()
 
     def get_queryset(self):
-        chats = self.model.objects.filter(members=self.request.user)
+        chats = self.model.objects.filter(members__user=self.request.user)
         return chats

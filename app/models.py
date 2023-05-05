@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator, MaxLengthValidator, RegexValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -9,6 +10,34 @@ CHAT_SLUG_REGEX = r'^[a-zA-Z_]{3,32}$'
 
 CHAT_TYPE_PRIVATE = 'private'
 CHAT_TYPE_GROUP = 'group'
+
+CHAT_ROLE_ADMIN = 'admin'
+CHAT_ROLE_MODERATOR = 'moderator'
+CHAT_ROLE_MEMBER = 'member'
+
+CHAT_ROLES = (
+    (CHAT_ROLE_ADMIN, _('Admin')),
+    (CHAT_ROLE_MODERATOR, _('Moderator')),
+    (CHAT_ROLE_MEMBER, _('Member')),
+)
+
+
+def validate_chat_member(data, delete=False):
+    instance = data['id']
+    chat = data['chat']
+    user = data['user']
+    role = data['role']
+    existing_members = chat.members.values_list('user__id', flat=True)
+    including_current = set(existing_members) | {user.id}
+    if chat.chat_type == CHAT_TYPE_PRIVATE:
+        if not instance and len(including_current) > 2:
+            raise ValidationError(_('Private chats cannot have more than 2 members.'))
+        elif delete and len(including_current) < 2:
+            raise ValidationError(_('Private chats cannot be empty.'))
+    else:
+        if ((instance and instance.role == CHAT_ROLE_ADMIN and role != CHAT_ROLE_ADMIN) or delete) and \
+                not chat.members.filter(role=CHAT_ROLE_ADMIN).exclude(user__pk=instance.user.pk).exists():
+            raise ValidationError(_('Chat must have at least one admin.'))
 
 
 class BaseMessage(models.Model):
@@ -30,7 +59,6 @@ class Chat(models.Model):
     slug = models.SlugField(max_length=32, unique=True, blank=True, null=True, default=None,
                             validators=[MinLengthValidator(3), MaxLengthValidator(32),
                                         RegexValidator(CHAT_SLUG_REGEX, _('Enter a valid slug.'))])
-    members = models.ManyToManyField(User, related_name='chats')
     creator = models.ForeignKey(User, models.RESTRICT, related_name='created_chats')
 
     class Meta:
@@ -41,6 +69,17 @@ class Chat(models.Model):
     def __str__(self):
         return str(self.id)
 
+    def save(self, *args, **kwargs):
+        if self.chat_type == CHAT_TYPE_PRIVATE:
+            self.public = False
+            self.slug = None
+            self.members.update(role=None)
+        else:
+            if not self.members.filter(role=CHAT_ROLE_ADMIN).exists() and self.members.filter(user=self.creator).exists():
+                self.members.filter(user=self.creator).update(role=CHAT_ROLE_ADMIN)
+            self.members.filter(role__isnull=True).update(role=CHAT_ROLE_MEMBER)
+        super().save(*args, **kwargs)
+
     @property
     def members_count(self):
         return self.members.count()
@@ -48,6 +87,25 @@ class Chat(models.Model):
     @property
     def last_message(self):
         return self.messages.last()
+
+
+class ChatMember(models.Model):
+    chat = models.ForeignKey('Chat', models.CASCADE, related_name='members')
+    user = models.ForeignKey(User, models.CASCADE)
+    role = models.CharField(max_length=9, choices=CHAT_ROLES, default=CHAT_ROLE_MEMBER, blank=True, null=True)
+
+    class Meta:
+        unique_together = ('chat', 'user')
+
+    def save(self, *args, **kwargs):
+        if self.chat.chat_type == CHAT_TYPE_PRIVATE:
+            self.role = None
+        elif self.chat.creator == self.user and \
+                (not self.role or not self.chat.members.filter(role=CHAT_ROLE_ADMIN).exists()):
+            self.role = CHAT_ROLE_ADMIN
+        elif not self.role:
+            self.role = CHAT_ROLE_MEMBER
+        super().save(*args, **kwargs)
 
 
 class Message(BaseMessage):
