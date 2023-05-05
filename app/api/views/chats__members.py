@@ -19,10 +19,9 @@ class IsChatAdmin(permissions.BasePermission):
 class ChatMembersViewSet(viewsets.ModelViewSet):
     model = ChatMember
     serializer_class = ChatMemberSerializer
-    queryset = ChatMember.objects.all()
     permission_classes = (permissions.IsAuthenticated, IsChatAdmin)
 
     def get_queryset(self):
         chat_id = self.kwargs.get('chat_id')
         chat = get_object_or_404(Chat, id=chat_id)
-        return super().get_queryset().filter(chat=chat)
+        return self.model.objects.filter(chat=chat)

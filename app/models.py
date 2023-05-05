@@ -91,7 +91,7 @@ class Chat(models.Model):
 
 class ChatMember(models.Model):
     chat = models.ForeignKey('Chat', models.CASCADE, related_name='members')
-    user = models.ForeignKey(User, models.CASCADE)
+    user = models.ForeignKey(User, models.CASCADE, related_name='chats')
     role = models.CharField(max_length=9, choices=CHAT_ROLES, default=CHAT_ROLE_MEMBER, blank=True, null=True)
 
     class Meta:
