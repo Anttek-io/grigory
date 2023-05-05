@@ -67,14 +67,14 @@ class ConversationConsumer(AsyncWebsocketConsumer):
         if chat_slug:
             if re.match(CHAT_SLUG_REGEX, chat_slug):
                 try:
-                    self.chat = await database_sync_to_async(Chat.objects.get)(slug=chat_slug, members=self.user)
+                    self.chat = await database_sync_to_async(Chat.objects.get)(slug=chat_slug, members__user=self.user)
                 except Chat.DoesNotExist:
                     return await self.return_error(404, _('Chat not found'))
             else:
                 return await self.return_error(400, _('Invalid chat slug'))
         elif chat_id:
             try:
-                self.chat = await database_sync_to_async(Chat.objects.get)(id=chat_id, members=self.user)
+                self.chat = await database_sync_to_async(Chat.objects.get)(id=chat_id, members__user=self.user)
             except Chat.DoesNotExist:
                 return await self.return_error(404, _('Chat not found'))
         elif user_id:
@@ -86,7 +86,7 @@ class ConversationConsumer(AsyncWebsocketConsumer):
             return await self.return_error(400, _('Invalid query params'))
         if not self.chat and self.friend:
             try:
-                self.chat = await database_sync_to_async(self.user.chats.get)(members=self.friend,
+                self.chat = await database_sync_to_async(self.user.chats.get)(members__user=self.friend,
                                                                               chat_type=CHAT_TYPE_PRIVATE)
             except Chat.DoesNotExist:
                 pass
