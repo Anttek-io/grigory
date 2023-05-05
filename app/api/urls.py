@@ -7,7 +7,7 @@ from app.api.views.users import UsersViewSet
 
 router = DefaultRouter(trailing_slash=False)
 
-router.register('chats/(?P<chat_id>[^/.]+)/members', ChatMembersViewSet, basename='chats/members')
+router.register(r'chats/(?P<chat_id>\d+)/members', ChatMembersViewSet, basename='chat-members')
 
 router.register('chats', ChatsViewSet, basename='chats')
 

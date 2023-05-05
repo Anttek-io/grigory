@@ -1,4 +1,4 @@
-from app.models import Chat, CHAT_TYPE_PRIVATE, CHAT_TYPE_GROUP, validate_chat
+from app.models import Chat, CHAT_TYPE_PRIVATE, CHAT_TYPE_GROUP
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 
@@ -8,11 +8,6 @@ from app.serializers.users import UserSerializer
 class ChatSerializer(serializers.ModelSerializer):
     creator = UserSerializer(read_only=True)
     members_count = serializers.IntegerField(read_only=True)
-
-    def validate(self, attrs):
-        validated_attrs = super().validate(attrs)
-        data = validate_chat(validated_attrs)
-        return data
 
     def create(self, validated_data):
         validated_data['creator'] = self.context['request'].user

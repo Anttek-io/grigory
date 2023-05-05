@@ -1,23 +1,23 @@
-from django.contrib import admin
 from django import forms
+from django.contrib import admin
 
-from app.models import Chat, Message, CHAT_TYPE_PRIVATE, validate_chat
+from app.models import Chat, Message, CHAT_TYPE_PRIVATE, validate_chat_member, ChatMember
 
 
-class ChatForm(forms.ModelForm):
+class ChatMemberForm(forms.models.BaseInlineFormSet):
     class Meta:
         model = Chat
         fields = '__all__'
 
     def clean(self):
-        cleaned_data = super().clean()
-        data = validate_chat(cleaned_data)
-        return data
+        for form in self.forms:
+            validate_chat_member(form.cleaned_data, form.cleaned_data['DELETE'])
 
 
 class ChatMemeberInline(admin.TabularInline):
-    model = Chat.members.through
+    model = ChatMember
     extra = 0
+    formset = ChatMemberForm
 
 
 @admin.register(Chat)
@@ -27,7 +27,6 @@ class ChatAdmin(admin.ModelAdmin):
     list_filter = ('chat_type',)
     search_fields = ('id', 'slug')
     readonly_fields = ('creator',)
-    form = ChatForm
     inlines = (ChatMemeberInline,)
 
     def get_readonly_fields(self, request, obj=None):
