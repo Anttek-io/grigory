@@ -1,3 +1,5 @@
+import os
+
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.contrib.auth import get_user_model
@@ -40,14 +42,6 @@ def validate_chat_member(data, delete=False):
         if ((instance and instance.role == CHAT_ROLE_ADMIN and role != CHAT_ROLE_ADMIN) or delete) and \
                 not chat.members.filter(role=CHAT_ROLE_ADMIN).exclude(user__pk=instance.user.pk).exists():
             raise ValidationError(_('Chat must have at least one admin.'))
-
-
-class BaseMessage(models.Model):
-    timestamp = models.DateTimeField(auto_now_add=True)
-    sender = models.ForeignKey(User, models.RESTRICT, related_name='sent_messages')
-
-    class Meta:
-        abstract = True
 
 
 class Chat(models.Model):
@@ -110,9 +104,13 @@ class ChatMember(models.Model):
         super().save(*args, **kwargs)
 
 
-class Message(BaseMessage):
+class Message(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True)
+    sender = models.ForeignKey(User, models.RESTRICT, related_name='sent_messages')
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='messages')
     text = models.TextField()
+
+    ready = models.BooleanField(default=True, editable=False)
 
     class Meta:
         verbose_name = _('Message')
@@ -127,6 +125,15 @@ class Message(BaseMessage):
 
     def __str__(self):
         return str(self.id)
+
+
+def get_message_upload_path(instance, filename):
+    return os.path.join('attachments', f'chat_{instance.message.chat.id}', filename)
+
+
+class Attachment(models.Model):
+    message = models.ForeignKey(Message, models.CASCADE, related_name='attachments', blank=True, null=True)
+    file = models.FileField(upload_to=get_message_upload_path, blank=True, null=True)
 
 
 class MessageView(models.Model):

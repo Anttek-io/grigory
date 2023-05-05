@@ -59,6 +59,7 @@ WebSockets are available at `wss://grigory-demo.anttek.io/ws`.
 - [x] Microservice architecture-ready (now with [DJ-MS Auth Router](https://github.com/dj-ms/dj-ms-auth-router) but will be changed to JWT stateless token auth metod)
 - [x] REST API both for clients and for microservices
 - [x] Chat management (creating, updating, deleting, adding and removing members, etc.)
+- [x] Support for file attachments (via REST API only since there's limitation for file size in channels)
 
 
 ## Features to be implemented
@@ -66,7 +67,6 @@ WebSockets are available at `wss://grigory-demo.anttek.io/ws`.
 - [ ] Using system events as messages in chats
 - [ ] Marking messages as read by concrete user
 - [ ] JWT authentication
-- [ ] Support for file attachments
   
 ---
   
