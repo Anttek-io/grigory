@@ -1,4 +1,4 @@
-from app.models import Chat, CHAT_TYPE_PRIVATE, CHAT_TYPE_GROUP
+from app.models import Chat, CHAT_TYPE_PRIVATE, CHAT_TYPE_GROUP, validate_chat
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 
@@ -6,17 +6,16 @@ from app.serializers.users import UserSerializer
 
 
 class ChatSerializer(serializers.ModelSerializer):
-    chat_type_choices = Chat.chat_type_choices
-    except_private = list(i[0] for i in chat_type_choices if i[0] != CHAT_TYPE_PRIVATE)
-    chat_type = serializers.ChoiceField(choices=except_private, default=CHAT_TYPE_GROUP)
+    # chat_type_choices = Chat.chat_type_choices
+    # except_private = list(i[0] for i in chat_type_choices if i[0] != CHAT_TYPE_PRIVATE)
+    # chat_type = serializers.ChoiceField(choices=except_private, default=CHAT_TYPE_GROUP)
     creator = UserSerializer(read_only=True)
     members_count = serializers.IntegerField(read_only=True)
 
     def validate(self, attrs):
-        chat_type = attrs.get('chat_type')
-        if chat_type == CHAT_TYPE_PRIVATE:
-            raise serializers.ValidationError({'chat_type': _('Private chats are created automatically.')})
-        return super().validate(attrs)
+        validated_attrs = super().validate(attrs)
+        data = validate_chat(validated_attrs)
+        return data
 
     def create(self, validated_data):
         validated_data['creator'] = self.context['request'].user

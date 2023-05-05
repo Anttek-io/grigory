@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator, MaxLengthValidator, RegexValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -9,6 +10,14 @@ CHAT_SLUG_REGEX = r'^[a-zA-Z_]{3,32}$'
 
 CHAT_TYPE_PRIVATE = 'private'
 CHAT_TYPE_GROUP = 'group'
+
+
+def validate_chat(data):
+    chat_type = data.get('chat_type')
+    members = data.get('members')
+    if chat_type == CHAT_TYPE_PRIVATE and members and members.count() > 2:
+        raise ValidationError({'members': _('Private chats cannot have more than 2 members.')})
+    return data
 
 
 class BaseMessage(models.Model):
@@ -40,6 +49,12 @@ class Chat(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+    def save(self, *args, **kwargs):
+        if self.chat_type == CHAT_TYPE_PRIVATE:
+            self.public = False
+            self.slug = None
+        super().save(*args, **kwargs)
 
     @property
     def members_count(self):
