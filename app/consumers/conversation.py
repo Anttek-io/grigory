@@ -58,8 +58,6 @@ class ConversationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope['user']
         self.group_name = f'user_{self.user.id}'
-        self.group_args = (self.group_name, self.channel_name)
-        await self.channel_layer.group_add(*self.group_args)
         query_string = self.scope['query_string'].decode('utf-8')
         query_params = parse_qs(query_string)
         chat_slug = query_params.get('chat_slug', [None])[0]
@@ -87,13 +85,16 @@ class ConversationConsumer(AsyncWebsocketConsumer):
             return await self.return_error(400, _('Invalid query params'))
         if not self.chat and self.friend:
             try:
-                self.chat = await database_sync_to_async(Chat.objects.get)(Q(
-                    Q(chat_type=CHAT_TYPE_PRIVATE) &
-                    Q(members__user=self.user) &
-                    Q(members__user=self.friend)
-                ))
+                self.chat = await database_sync_to_async(Chat.objects.get)\
+                    (chat_type=CHAT_TYPE_PRIVATE,
+                     members__user=self.user,
+                     pk__in=Chat.objects.filter(chat_type=CHAT_TYPE_PRIVATE, members__user=self.friend).values('pk'))
             except Chat.DoesNotExist:
                 pass
+        if self.chat:
+            self.group_name = f'chat_{self.chat.id}'
+        self.group_args = (self.group_name, self.channel_name)
+        await self.channel_layer.group_add(*self.group_args)
         await self.accept()
         await self.send_message_list()
 
@@ -119,10 +120,6 @@ class ConversationConsumer(AsyncWebsocketConsumer):
             await self.send_message_list(offset, limit)
         if message:
             self.message = await self.create_message(message)
-            data = {'type': 'message'}
-            serializer_data = await sync_to_async(get_serializer_data)(self.message)
-            data.update(serializer_data)
-            await self.channel_layer.group_send(self.group_name, {'type': 'chat_message', 'data': data})
 
     async def chat_message(self, event):
         assert event.get('data'), 'Data is required'
