@@ -163,3 +163,8 @@ networks:
     external: true
   traefik_default:
     external: true
+
+
+volumes:
+  static:
+  media:
