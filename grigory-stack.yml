@@ -7,15 +7,25 @@ x-environment: &environment
   DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-}
   DJANGO_LANGUAGE_CODE: ${DJANGO_LANGUAGE_CODE:-}
   DJANGO_TIME_ZONE: ${DJANGO_TIME_ZONE:-}
-  DJANGO_COLLECT_STATIC: ${DJANGO_COLLECT_STATIC:-}
+  DJANGO_COLLECT_STATIC: ${DJANGO_COLLECT_STATIC:-True}
   DJANGO_REST_AUTH_TOKEN_TTL: ${DJANGO_REST_AUTH_TOKEN_TTL:-}
   DJANGO_REST_EXPOSE_AUTH_API: ${DJANGO_REST_EXPOSE_AUTH_API:-}
   DJANGO_BASE_PATH: ${DJANGO_BASE_PATH:-}
   AUTH_DB_URL: ${AUTH_DB_URL:-}
   REDIS_URL: redis://redis:6379
   DATABASE_URL: ${DATABASE_URL:-}
-  VIRTUAL_HOST: ${VIRTUAL_HOST:-}
-  STACK_NAME: ${STACK_NAME:-}
+
+x-common: &common
+  volumes:
+    - static:/usr/share/nginx/html/static
+    - media:/usr/share/nginx/html/media
+
+x-app-common: &app-common
+  image: anttek/grigory:${TAG:-latest}
+  environment: *environment
+  networks:
+    - default
+    - postgres_default
 
 
 services:
@@ -25,8 +35,58 @@ services:
       replicas: 1
       restart_policy:
         condition: on-failure
+  nginx:
+    image: nginx:alpine
+    <<: *common
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        rm /etc/nginx/conf.d/default.conf
+        cat <<EOF > /etc/nginx/conf.d/default.conf
+        upstream django {
+            server django:8000;
+        }
+        server {
+            listen 8000;
+            
+            location / {
+                proxy_pass http://django;
+                proxy_set_header Upgrade "\$$http_upgrade";
+                proxy_set_header Connection "Upgrade";
+                proxy_set_header Host "\$$http_host";
+                proxy_set_header X-Forwarded-For "\$$proxy_add_x_forwarded_for";
+                proxy_set_header X-Real-IP "\$$remote_addr";
+            }
+            location /static/ {
+                alias /usr/share/nginx/html/static/;
+            }
+            location /media/ {
+                alias /usr/share/nginx/html/media/;
+            }
+        }
+        EOF
+        nginx -g "daemon off;"
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.${STACK_NAME}.loadbalancer.server.port=8000"
+        - "traefik.http.middlewares.${STACK_NAME}-redirect.redirectscheme.scheme=https"
+        - "traefik.http.middlewares.${STACK_NAME}-redirect.redirectscheme.port=443"
+        - "traefik.http.middlewares.${STACK_NAME}-redirect.redirectscheme.permanent=true"
+        - "traefik.http.routers.${STACK_NAME}.rule=Host(`${VIRTUAL_HOST}`)"
+        - "traefik.http.routers.${STACK_NAME}.entrypoints=https"
+        - "traefik.http.routers.${STACK_NAME}.tls=true"
+        - "traefik.http.routers.${STACK_NAME}.middlewares=${STACK_NAME}-redirect"
+        - "traefik.http.routers.${STACK_NAME}.tls.certresolver=production"
+        - "traefik.http.routers.${STACK_NAME}.tls.domains[0].main=${VIRTUAL_HOST}"
+        - "traefik.docker.network=traefik_default"
+    networks:
+      - default
+      - traefik_default
   django:
-    image: anttek/grigory:${TAG:-latest}
+    <<: *app-common
+    <<: *common
     deploy:
       replicas: 1
       restart_policy:
@@ -43,32 +103,15 @@ services:
         reservations:
           cpus: '0.25'
           memory: 256M
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.${STACK_NAME}.rule=Host(`${VIRTUAL_HOST}`)"
-        - "traefik.http.routers.${STACK_NAME}.entrypoints=https" # or websecure sometimes
-        - "traefik.http.routers.${STACK_NAME}.tls=true"
-        - "traefik.http.services.${STACK_NAME}.loadbalancer.server.port=8000"
-        - "traefik.docker.network=traefik_default"
-        - "traefik.http.routers.${STACK_NAME}.middlewares=${STACK_NAME}-redirect"
-        - "traefik.http.middlewares.${STACK_NAME}-redirect.redirectscheme.scheme=https"
-        - "traefik.http.middlewares.${STACK_NAME}-redirect.redirectscheme.permanent=true"
-        - "traefik.http.middlewares.${STACK_NAME}-redirect.redirectscheme.port=443"
-        - "traefik.http.routers.${STACK_NAME}.tls.certresolver=production"
-        - "traefik.http.routers.${STACK_NAME}.tls.domains[0].main=${VIRTUAL_HOST}"
-    environment: *environment
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 5s
       timeout: 5s
       retries: 30
       start_period: 30s
-    networks:
-      - default
-      - postgres_default
-      - traefik_default
   celery:
-    image: anttek/grigory:${TAG:-latest}
+    <<: *app-common
+    <<: *common
     command: celery -A core worker -l debug --concurrency 1 -P solo -E
     deploy:
       replicas: 1
@@ -87,17 +130,14 @@ services:
           cpus: '0.25'
           memory: 256M
     entrypoint: []
-    environment: *environment
     healthcheck:
       test: ["CMD", "celery", "-A", "core", "inspect", "ping"]
       interval: 5s
       timeout: 3s
       retries: 10
-    networks:
-      - default
-      - postgres_default
   celery-beat:
-    image: anttek/grigory:${TAG:-latest}
+    <<: *app-common
+    <<: *common
     command: celery -A core beat -l debug
     deploy:
       replicas: 1
@@ -116,10 +156,6 @@ services:
           cpus: '0.25'
           memory: 256M
     entrypoint: []
-    environment: *environment
-    networks:
-      - default
-      - postgres_default
 
 
 networks:

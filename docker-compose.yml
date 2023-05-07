@@ -7,7 +7,7 @@ x-environment: &environment
   DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-}
   DJANGO_LANGUAGE_CODE: ${DJANGO_LANGUAGE_CODE:-}
   DJANGO_TIME_ZONE: ${DJANGO_TIME_ZONE:-}
-  DJANGO_COLLECT_STATIC: ${DJANGO_COLLECT_STATIC:-}
+  DJANGO_COLLECT_STATIC: ${DJANGO_COLLECT_STATIC:-True}
   DJANGO_REST_AUTH_TOKEN_TTL: ${DJANGO_REST_AUTH_TOKEN_TTL:-}
   DJANGO_REST_EXPOSE_AUTH_API: ${DJANGO_REST_EXPOSE_AUTH_API:-}
   DJANGO_BASE_PATH: ${DJANGO_BASE_PATH:-}
@@ -15,6 +15,16 @@ x-environment: &environment
   REDIS_URL: redis://redis:6379
   DATABASE_URL: ${DATABASE_URL:-postgres://grigory:grigory@postgres:5432/grigory}
 
+x-app-common: &app-common
+  image: anttek/grigory:${TAG:-latest}
+  environment: *environment
+  user: root
+  volumes:
+    - .:/app
+    - /app/static
+    - /app/media
+    - static:/app/static
+    - media:/app/media
 
 services:
   postgres:
@@ -33,55 +43,81 @@ services:
     image: redis:alpine
     volumes:
       - redis_data:/data
+  nginx:
+    image: nginx:alpine
+    depends_on:
+      - django
+    volumes:
+      - static:/usr/share/nginx/html/static
+      - media:/usr/share/nginx/html/media
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        rm /etc/nginx/conf.d/default.conf
+        cat <<EOF > /etc/nginx/conf.d/default.conf
+        upstream django {
+            server django:8000;
+        }
+        server {
+            listen 80;
+            
+            location / {
+                proxy_pass http://django;
+                proxy_set_header Upgrade "\$$http_upgrade";
+                proxy_set_header Connection "Upgrade";
+                proxy_set_header Host "\$$http_host";
+                proxy_set_header X-Forwarded-For "\$$proxy_add_x_forwarded_for";
+                proxy_set_header X-Real-IP "\$$remote_addr";
+            }
+            location /static/ {
+                alias /usr/share/nginx/html/static/;
+            }
+            location /media/ {
+                alias /usr/share/nginx/html/media/;
+            }
+        }
+        EOF
+        nginx -g "daemon off;"
+    ports:
+      - "${GRIGORY_WEB_PORT:-8000}:80"
   django:
-    image: anttek/grigory:${TAG:-latest}
+    <<: *app-common
     build:
       context: .
       dockerfile: ${DOCKERFILE:-Dockerfile}
     depends_on:
       - redis
       - postgres
-    environment: *environment
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 5s
       timeout: 5s
       retries: 30
       start_period: 30s
-    ports:
-      - "${DJANGO_WEB_PORT:-}:8000"
-    user: root
-    volumes:
-      - .:/home/django
   celery:
-    image: anttek/grigory:${TAG:-latest}
+    <<: *app-common
     command: celery -A core worker -l debug --concurrency 1 -P solo -E
     depends_on:
       django:
         condition: service_healthy
     entrypoint: []
-    environment: *environment
     healthcheck:
       test: ["CMD", "celery", "-A", "core", "inspect", "ping"]
       interval: 5s
       timeout: 3s
       retries: 10
-    user: root
-    volumes:
-      - .:/home/django
   celery-beat:
-    image: anttek/grigory:${TAG:-latest}
+    <<: *app-common
     command: celery -A core beat -l debug
     depends_on:
       django:
         condition: service_healthy
     entrypoint: []
-    environment: *environment
-    user: root
-    volumes:
-      - .:/home/django
 
 
 volumes:
   postgres_data:
   redis_data:
+  static:
+  media:
