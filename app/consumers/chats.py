@@ -38,7 +38,7 @@ class ChatsConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(*self.group_args)
 
-    async def message(self, event):
+    async def send_message(self, event):
         assert event.get('data'), 'Data is required'
         await self.send(text_data=json.dumps(event['data']))
 
@@ -50,7 +50,7 @@ class ChatsConsumer(AsyncWebsocketConsumer):
             'total': total,
             'results': results
         }
-        await self.channel_layer.group_send(self.group_name, {'type': 'message', 'data': data})
+        await self.channel_layer.group_send(self.group_name, {'type': 'send_message', 'data': data})
 
     @database_sync_to_async
     def get_chats(self):

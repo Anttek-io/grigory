@@ -120,7 +120,7 @@ class ConversationConsumer(AsyncWebsocketConsumer):
         if message:
             self.message = await self.create_message(message)
 
-    async def message(self, event):
+    async def send_message(self, event):
         assert event.get('data'), 'Data is required'
         await self.send(text_data=json.dumps(event['data']))
 
@@ -134,7 +134,7 @@ class ConversationConsumer(AsyncWebsocketConsumer):
             'total': total,
             'results': results
         }
-        await self.channel_layer.group_send(self.group_name, {'type': 'message', 'data': data})
+        await self.channel_layer.group_send(self.group_name, {'type': 'send_message', 'data': data})
 
     @database_sync_to_async
     def get_messages(self, offset=0, limit=MESSAGES_LIMIT):

@@ -1,8 +1,4 @@
-__pycache__
-
 .idea
-
-venv
 
 .git
 .gitignore
@@ -20,8 +16,12 @@ docs
 LICENSE
 README.md
 
+__pycache__
+venv
 .env.example
 .env
+static
+media
 
  .*_history
 .cache
