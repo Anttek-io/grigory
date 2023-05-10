@@ -9,6 +9,20 @@ from app.models import Chat
 from app.serializers.chats import ChatSerializer, ChatListSerializer
 
 
+def get_user_chats(user):
+    qs = Chat.objects.annotate(last_message_timestamp=Max('messages__timestamp')).filter(
+        members__user=user).order_by('-last_message_timestamp')
+    total = qs.count()
+    data = get_serializer_data(qs, many=True)
+    chats_list = {
+        'type': 'chat_list',
+        'count': qs.count(),
+        'total': total,
+        'results': data
+    }
+    return chats_list
+
+
 def get_serializer_data(instance, many=False):
     if many:
         serializer_class = ChatListSerializer
@@ -43,19 +57,5 @@ class ChatsConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(event['data']))
 
     async def send_chats_list(self):
-        results, count, total = await self.get_chats()
-        data = {
-            'type': 'chat_list',
-            'count': count,
-            'total': total,
-            'results': results
-        }
+        data = await database_sync_to_async(get_user_chats)(self.user)
         await self.channel_layer.group_send(self.group_name, {'type': 'send_message', 'data': data})
-
-    @database_sync_to_async
-    def get_chats(self):
-        qs = Chat.objects.annotate(last_message_timestamp=Max('messages__timestamp')).filter(
-            members__user=self.user).order_by('-last_message_timestamp')
-        total = qs.count()
-        data = get_serializer_data(qs, many=True)
-        return data, qs.count(), total
