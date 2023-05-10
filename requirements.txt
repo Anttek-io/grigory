@@ -1,13 +1,12 @@
 # Python
 python-dotenv~=1.0.0
+PyJWT~=2.7.0
 
 # Django
-Django==3.2
+Django==4.2.1
 djangorestframework
+djangorestframework-simplejwt==5.2.2
 django-filter==23.2
-
-# Microservices
-dj-ms-auth-router==1.5.1
 
 # Database
 psycopg2-binary
@@ -29,4 +28,4 @@ channels
 channels_redis
 
 # Redis - needed both for channels and celery
-redis
+django-redis==5.2.0

@@ -53,21 +53,17 @@ WebSockets are available at `wss://grigory-demo.anttek.io/ws`.
 ---
   
 ## Features implemented
-
-- [x] Expiring Token authentication
-- [x] WebSockets with Token authentication
-- [x] Microservice architecture-ready (now with [DJ-MS Auth Router](https://github.com/dj-ms/dj-ms-auth-router) but will be changed to JWT stateless token auth metod)
-- [x] REST API both for clients and for microservices
+  
+- [x] WebSockets with JWT auth (with [Rest Framework Simple JWT](https://rest-framework-simplejwt.readthedocs.io/en/latest/))
+- [x] Microservice architecture-ready
 - [x] Chat management (creating, updating, deleting, adding and removing members, etc.)
-- [x] Support for file attachments (via REST API only since there's limitation for file size in channels)
-
-
+- [x] File attachments via REST API only (because there's limitation for message size in Django Channels / Redis)
+  
 ## Features to be implemented
 
 - [ ] Marking messages as read by concrete user
 - [ ] Show unread messages count in chat list
 - [ ] Using system events as messages in chats
-- [ ] JWT authentication
   
 ---
   

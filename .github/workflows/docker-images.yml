@@ -25,23 +25,13 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-    - name: Build the main Docker image
+    - name: Build image
       run: |
         DOCKER_BUILDKIT=1 docker build . -t ${{ secrets.DOCKER_USERNAME }}/grigory:${{steps.extract_tag.outputs.result}}
-    - name: Build the oracle Docker image
-      run: |
-        DOCKER_BUILDKIT=1 docker build . -f Dockerfile-oracle -t ${{ secrets.DOCKER_USERNAME }}/grigory:${{steps.extract_tag.outputs.result}}-oracle
-    - name: Tag the main Docker image
+    - name: Tag image
       run: |
         docker tag ${{ secrets.DOCKER_USERNAME }}/grigory:${{steps.extract_tag.outputs.result}} ${{ secrets.DOCKER_USERNAME }}/grigory:latest
-    - name: Tag the oracle Docker image
-      run: |
-        docker tag ${{ secrets.DOCKER_USERNAME }}/grigory:${{steps.extract_tag.outputs.result}}-oracle ${{ secrets.DOCKER_USERNAME }}/grigory:latest-oracle
-    - name: Push the main Docker image
+    - name: Push image
       run: |
         docker push ${{ secrets.DOCKER_USERNAME }}/grigory:${{steps.extract_tag.outputs.result}}
         docker push ${{ secrets.DOCKER_USERNAME }}/grigory:latest
-    - name: Push the oracle Docker image
-      run: |
-        docker push ${{ secrets.DOCKER_USERNAME }}/grigory:${{steps.extract_tag.outputs.result}}-oracle
-        docker push ${{ secrets.DOCKER_USERNAME }}/grigory:latest-oracle

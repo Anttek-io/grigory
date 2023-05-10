@@ -1,60 +1,17 @@
-import datetime
 import logging
 
-from django.contrib.auth import authenticate, password_validation, login, logout
+from django.contrib.auth import password_validation, get_user_model
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
-from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from authentication.models import User, Token
-from django.utils.translation import gettext_lazy as _
-from django.conf import settings
 
 
-TOKEN_TTL = settings.REST_AUTH_TOKEN_TTL
-
-
-@csrf_exempt
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def login_view(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
-    if None in (username, password):
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-    user_exists = User.objects.filter(username=username).exists()
-    if not user_exists:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    user = authenticate(request, username=username, password=password)
-    if user is None:
-        return Response(status=status.HTTP_403_FORBIDDEN)
-    now = timezone.now()
-    diff = now - datetime.timedelta(seconds=TOKEN_TTL)
-    token, created = Token.objects.get_or_create(user_id=user.pk, last_use__gt=diff, active=True)
-    login(request, user)
-    return Response({'token': token.key,
-                     'user': {
-                        'id': user.pk,
-                        'username': user.username,
-                        'email': user.email,
-                        'first_name': user.first_name,
-                        'last_name': user.last_name,
-                     }})
-
-
-@csrf_exempt
-@api_view(['POST'])
-def logout_view(request):
-    if request.user.is_anonymous:
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
-    user = request.user
-    Token.objects.filter(user_id=user.pk).update(active=False)
-    logout(request)
-    return Response(status=status.HTTP_200_OK)
+User = get_user_model()
 
 
 @csrf_exempt
