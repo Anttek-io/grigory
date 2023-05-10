@@ -54,6 +54,17 @@ if EXTRA_ALLOWED_HOSTS:
     assert isinstance(EXTRA_ALLOWED_HOSTS.split(','), list)
     ALLOWED_HOSTS.extend(EXTRA_ALLOWED_HOSTS.split(','))
 
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]
+
+EXTRA_CORS_ALLOWED_ORIGINS = getenv('DJANGO_CORS_ALLOWED_ORIGINS', None)
+
+if EXTRA_CORS_ALLOWED_ORIGINS:
+    assert isinstance(EXTRA_CORS_ALLOWED_ORIGINS.split(','), list)
+    CORS_ALLOWED_ORIGINS.extend(EXTRA_CORS_ALLOWED_ORIGINS.split(','))
+
 DJANGO_BASE_PATH = getenv('DJANGO_BASE_PATH', '')
 
 if DJANGO_BASE_PATH != '' and not DJANGO_BASE_PATH.endswith('/'):
