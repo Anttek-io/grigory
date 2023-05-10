@@ -65,10 +65,10 @@ if EXTRA_CSRF_TRUSTED_ORIGINS:
     assert isinstance(EXTRA_CSRF_TRUSTED_ORIGINS.split(','), list)
     CSRF_TRUSTED_ORIGINS.extend(EXTRA_CSRF_TRUSTED_ORIGINS.split(','))
 
-DJANGO_BASE_PATH = getenv('DJANGO_BASE_PATH', '')
+BASE_PATH = getenv('DJANGO_BASE_PATH', '')
 
-if DJANGO_BASE_PATH != '' and not DJANGO_BASE_PATH.endswith('/'):
-    DJANGO_BASE_PATH += '/'
+if BASE_PATH != '' and not BASE_PATH.endswith('/'):
+    BASE_PATH += '/'
 
 # Application definition
 
@@ -165,7 +165,7 @@ USE_TZ = getenv('DJANGO_USE_TZ', True)
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = BASE_PATH + 'static/'
 
 STATIC_ROOT = BASE_DIR / 'static'
 
@@ -175,7 +175,7 @@ STATICFILES_DIRS = [
 
 # Media files
 
-MEDIA_URL = 'media/'
+MEDIA_URL = BASE_PATH + 'media/'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 
