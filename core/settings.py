@@ -65,6 +65,14 @@ if EXTRA_CSRF_TRUSTED_ORIGINS:
     assert isinstance(EXTRA_CSRF_TRUSTED_ORIGINS.split(','), list)
     CSRF_TRUSTED_ORIGINS.extend(EXTRA_CSRF_TRUSTED_ORIGINS.split(','))
 
+SESSION_COOKIE_AGE = 10 * 60 * 60
+
+SESSION_COOKIE_HTTPONLY = False
+
+SESSION_COOKIE_SAMESITE = 'None'
+
+SESSION_COOKIE_SECURE = True
+
 BASE_PATH = getenv('BASE_PATH', '')
 
 if BASE_PATH != '' and not BASE_PATH.endswith('/'):
