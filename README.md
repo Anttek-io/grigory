@@ -80,9 +80,9 @@ git clone https://github.com/Anttek-io/grigory.git
 cd grigory
 ```
   
-Create `.env` file and put at least `DJANGO_WEB_PORT`  
+Create `.env` file and put at least `GRIGORY_WEB_PORT`  
 ```shell
-DJANGO_WEB_PORT=8000
+GRIGORY_WEB_PORT=8000
 ```
   
 Run the app  
