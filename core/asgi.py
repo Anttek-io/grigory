@@ -17,7 +17,7 @@ from django.urls import path
 from uvicorn.workers import UvicornWorker as BaseUvicornWorker
 
 from core.middleware import WebSocketHealthCheckMiddleware
-from core.settings import DJANGO_BASE_PATH
+from core.settings import BASE_PATH
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
@@ -39,7 +39,7 @@ application = ProtocolTypeRouter({
         AllowedHostsOriginValidator(
             AuthMiddlewareStack(
                 URLRouter([
-                    path(DJANGO_BASE_PATH + 'ws/', root_routing),
+                    path(BASE_PATH + 'ws/', root_routing),
                 ])
             )
         )

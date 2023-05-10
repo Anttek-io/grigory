@@ -65,7 +65,7 @@ if EXTRA_CSRF_TRUSTED_ORIGINS:
     assert isinstance(EXTRA_CSRF_TRUSTED_ORIGINS.split(','), list)
     CSRF_TRUSTED_ORIGINS.extend(EXTRA_CSRF_TRUSTED_ORIGINS.split(','))
 
-BASE_PATH = getenv('DJANGO_BASE_PATH', '')
+BASE_PATH = getenv('BASE_PATH', '')
 
 if BASE_PATH != '' and not BASE_PATH.endswith('/'):
     BASE_PATH += '/'
