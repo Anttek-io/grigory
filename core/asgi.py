@@ -23,7 +23,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
 django.setup()
 
-from authentication.middleware import AuthMiddlewareStack
+from authentication.jwt.middleware import AuthMiddlewareStack
 from core.routing import root_routing
 
 # Initialize Django ASGI application early to ensure the AppRegistry

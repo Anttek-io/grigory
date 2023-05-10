@@ -1,36 +1,17 @@
-import datetime
+import logging
 
 from channels.auth import login, AuthMiddleware
 from channels.db import database_sync_to_async
 from channels.security.websocket import WebsocketDenier
 from channels.sessions import CookieMiddleware, SessionMiddleware
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from django.utils import timezone
+from django.db import close_old_connections
+from jwt import decode as jwt_decode
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework_simplejwt.tokens import UntypedToken
 
-from authentication.models import Token
-from core.settings import REST_AUTH_TOKEN_TTL
-
-
-@database_sync_to_async
-def get_user(token_key):
-    try:
-        token = Token.objects.get(key=token_key)
-    except Token.DoesNotExist:
-        return None
-    else:
-        if not token.user.is_active:
-            return None
-        if not token.active:
-            return None
-        now = timezone.now()
-        diff = now - datetime.timedelta(seconds=REST_AUTH_TOKEN_TTL)
-        if token.last_use < diff:
-            token.active = False
-            token.save()
-            return None
-    token.last_use = now
-    token.save()
-    return token.user
+from core.settings import SECRET_KEY
 
 
 class TokenAuthMiddleware:
@@ -42,17 +23,27 @@ class TokenAuthMiddleware:
     async def __call__(self, scope, receive, send):
         if scope.get('user') not in (None, AnonymousUser):
             return await self.inner(scope, receive, send)
+        close_old_connections()
         headers = dict(scope["headers"])
         if b"authorization" in headers:
             auth = headers[b"authorization"].decode()
             if auth.startswith(self.keyword):
                 token = auth.split()[1]
-                scope["user"] = await get_user(token)
-                if scope.get('user') not in (None, AnonymousUser):
-                    await login(scope, scope.get('user'))
-                else:
+                try:
+                    UntypedToken(token)
+                except (InvalidToken, TokenError) as e:
+                    logging.error(e)
                     denier = WebsocketDenier()
                     return await denier(scope, receive, send)
+                else:
+                    decoded_data = jwt_decode(token, SECRET_KEY, algorithms=["HS256"])
+                    defaults = decoded_data["user"]
+                    user, user_created = await database_sync_to_async(get_user_model().objects.update_or_create)(
+                        id=decoded_data["user_id"],
+                        defaults=defaults
+                    )
+                    await login(scope, user)
+                    scope["user"] = user
         return await self.inner(scope, receive, send)
 
 
