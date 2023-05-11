@@ -139,7 +139,7 @@ services:
         reservations:
           cpus: '0.25'
           memory: 256M
-    entrypoint: []
+    entrypoint: ""
     healthcheck:
       test: ["CMD", "celery", "-A", "core", "inspect", "ping"]
       interval: 5s
@@ -165,7 +165,7 @@ services:
         reservations:
           cpus: '0.25'
           memory: 256M
-    entrypoint: []
+    entrypoint: ""
 
 networks:
   traefik_default:

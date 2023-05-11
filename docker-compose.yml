@@ -102,7 +102,7 @@ services:
     depends_on:
       django:
         condition: service_healthy
-    entrypoint: []
+    entrypoint: ""
     healthcheck:
       test: ["CMD", "celery", "-A", "core", "inspect", "ping"]
       interval: 5s
@@ -114,7 +114,7 @@ services:
     depends_on:
       django:
         condition: service_healthy
-    entrypoint: []
+    entrypoint: ""
 
 
 volumes:
