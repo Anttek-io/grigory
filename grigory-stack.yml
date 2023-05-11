@@ -92,6 +92,7 @@ services:
         - "traefik.http.routers.${STACK_NAME}.tls.domains[0].main=${VIRTUAL_HOST}"
         - "traefik.docker.network=traefik_default"
     networks:
+      - default
       - traefik_default
   django:
     <<: *app-common
