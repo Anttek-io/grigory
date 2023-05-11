@@ -1,8 +1,7 @@
 version: '3.9'
 
-
 x-environment: &environment
-  DATABASE_URL: ${DATABASE_URL:-}
+  DATABASE_URL: postgres://grigory:grigory@postgres:5432/grigory
   REDIS_URL: redis://redis:6379
   DJANGO_DEBUG: ${DJANGO_DEBUG:-True}
   DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-}
@@ -28,8 +27,19 @@ x-app-common: &app-common
     - default
     - postgres_default
 
-
 services:
+  postgres:
+    image: postgres:12
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    environment:
+      - POSTGRES_DB=grigory
+      - POSTGRES_USER=grigory
+      - POSTGRES_PASSWORD=grigory
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
   redis:
     image: redis:alpine
     deploy:
@@ -158,14 +168,11 @@ services:
           memory: 256M
     entrypoint: []
 
-
 networks:
-  postgres_default:
-    external: true
   traefik_default:
     external: true
 
-
 volumes:
+  postgres_data:
   static:
   media:
