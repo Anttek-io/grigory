@@ -24,12 +24,11 @@ For example, frontend developers who needs chat and/or notifications functionali
   
 ![screenshot](docs/media/scheme.png)  
   
-1. Any microservice or client just sends some message via REST API or WebSockets 
-with the indication of the chat it belongs to.
-If specified chat doesn't exist, it's created automatically.
-2. This message first goes to queue to avoid overloading the database.  
-3. Then it's processed by the worker and saved to the database.  
-4. After that, the message is sent to real-time chat via WebSockets.
+1. Any client or microservice sends some message via REST API or WebSockets 
+with the indication of the chat it belongs to.  
+    1.1. If chat with user doesn't exist, it will be created automatically.  
+2. Then this message gets saved in database.
+3. After that, the message is sent to real-time chat via WebSockets.
 
 Message history can be retrieved via REST API or WebSockets.  
   
