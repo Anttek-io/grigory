@@ -40,9 +40,5 @@ USER ${USER}
 # Copy the source code into the container.
 COPY . .
 
-# Set custom shell script as entrypoint of container.
-ENV WORKDIR=${WORKDIR}
-ENTRYPOINT "${WORKDIR}/entrypoint.sh"
-
 # Expose the port that the application listens on.
 EXPOSE 8000

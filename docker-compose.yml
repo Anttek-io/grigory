@@ -90,6 +90,7 @@ services:
     depends_on:
       - redis
       - postgres
+    entrypoint: /app/entrypoint.sh
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 5s
@@ -102,7 +103,6 @@ services:
     depends_on:
       django:
         condition: service_healthy
-    entrypoint: ""
     healthcheck:
       test: ["CMD", "celery", "-A", "core", "inspect", "ping"]
       interval: 5s
@@ -114,7 +114,6 @@ services:
     depends_on:
       django:
         condition: service_healthy
-    entrypoint: ""
 
 
 volumes:

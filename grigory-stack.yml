@@ -113,6 +113,7 @@ services:
         reservations:
           cpus: '0.25'
           memory: 256M
+    entrypoint: /app/entrypoint.sh
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 5s
@@ -139,7 +140,6 @@ services:
         reservations:
           cpus: '0.25'
           memory: 256M
-    entrypoint: ""
     healthcheck:
       test: ["CMD", "celery", "-A", "core", "inspect", "ping"]
       interval: 5s
@@ -165,7 +165,6 @@ services:
         reservations:
           cpus: '0.25'
           memory: 256M
-    entrypoint: ""
 
 networks:
   traefik_default:
