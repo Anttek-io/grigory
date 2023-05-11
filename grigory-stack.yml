@@ -19,13 +19,12 @@ x-common: &common
   volumes:
     - static:/usr/share/nginx/html/static
     - media:/usr/share/nginx/html/media
+  networks:
+    - default
 
 x-app-common: &app-common
   image: anttek/grigory:${TAG:-latest}
   environment: *environment
-  networks:
-    - default
-    - postgres_default
 
 services:
   postgres:
@@ -93,7 +92,6 @@ services:
         - "traefik.http.routers.${STACK_NAME}.tls.domains[0].main=${VIRTUAL_HOST}"
         - "traefik.docker.network=traefik_default"
     networks:
-      - default
       - traefik_default
   django:
     <<: *app-common
