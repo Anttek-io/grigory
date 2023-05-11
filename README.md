@@ -55,9 +55,10 @@ WebSockets are available at `wss://grigory-demo.anttek.io/ws`.
 ## Features implemented
   
 - [x] WebSockets with JWT auth (with [Rest Framework Simple JWT](https://rest-framework-simplejwt.readthedocs.io/en/latest/))
-- [x] Microservice architecture-ready
+- [x] Real-time chats and chat list
 - [x] Chat management (creating, updating, deleting, adding and removing members, etc.)
 - [x] File attachments via REST API only (because there's limitation for message size in Django Channels / Redis)
+- [x] Microservice architecture-ready
   
 ## Features to be implemented
 
