@@ -87,7 +87,13 @@ Run the app
 docker compose up -d
 ```
   
-> If you'd like to run Grigory without Docker, read [docs](https://anttek-io.github.io/grigory/).
+---
+  
+## Documentation
+  
+Hand-writed docs available here: [link to GitHub Pages](https://anttek-io.github.io/grigory/).
+  
+Demo auto-generated docs available here: [link to RapiDoc UI](https://grigory-demo.anttek.io/api/docs/).
   
 ---
   

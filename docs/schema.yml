@@ -35,6 +35,7 @@ paths:
       tags:
       - chats
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '200':
@@ -59,6 +60,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Chat'
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '201':
@@ -104,6 +106,7 @@ paths:
       tags:
       - chats
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '200':
@@ -136,6 +139,7 @@ paths:
               $ref: '#/components/schemas/ChatMember'
         required: true
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '201':
@@ -163,6 +167,7 @@ paths:
       tags:
       - chats
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '200':
@@ -201,6 +206,7 @@ paths:
               $ref: '#/components/schemas/ChatMember'
         required: true
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '200':
@@ -238,6 +244,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedChatMember'
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '200':
@@ -264,6 +271,7 @@ paths:
       tags:
       - chats
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '204':
@@ -305,6 +313,7 @@ paths:
       tags:
       - chats
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '200':
@@ -337,6 +346,7 @@ paths:
               $ref: '#/components/schemas/Message'
         required: true
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '201':
@@ -364,6 +374,7 @@ paths:
       tags:
       - chats
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '200':
@@ -402,6 +413,7 @@ paths:
               $ref: '#/components/schemas/Message'
         required: true
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '200':
@@ -439,6 +451,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedMessage'
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '200':
@@ -465,6 +478,7 @@ paths:
       tags:
       - chats
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '204':
@@ -482,6 +496,7 @@ paths:
       tags:
       - chats
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '200':
@@ -513,6 +528,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Chat'
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '200':
@@ -544,6 +560,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedChat'
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '200':
@@ -564,6 +581,7 @@ paths:
       tags:
       - chats
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '204':
@@ -690,6 +708,7 @@ paths:
       tags:
       - schema
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       - {}
       responses:
@@ -743,6 +762,7 @@ paths:
       tags:
       - users
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '200':
@@ -764,6 +784,7 @@ paths:
       tags:
       - users
       security:
+      - JWTAutoUserCreatingAuthentication: []
       - cookieAuth: []
       responses:
         '200':
@@ -835,7 +856,8 @@ components:
           type: integer
           readOnly: true
         last_message:
-          type: string
+          type: object
+          additionalProperties: {}
           readOnly: true
         chat_type:
           $ref: '#/components/schemas/ChatTypeEnum'
@@ -1086,6 +1108,12 @@ components:
       - id
       - username
   securitySchemes:
+    JWTAutoUserCreatingAuthentication:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Bearer"
+      scheme: bearer
     cookieAuth:
       type: apiKey
       in: cookie
