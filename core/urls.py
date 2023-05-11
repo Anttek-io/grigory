@@ -15,11 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from drf_spectacular.views import SpectacularAPIView
 
+from core.api.views import SpectacularRapiDocView
 from core.settings import REST_EXPOSE_AUTH_API, BASE_PATH, EXPOSE_DEMO_SITE
 
 urlpatterns = [
     path(BASE_PATH + 'admin/', admin.site.urls),
+    path(BASE_PATH + 'api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path(BASE_PATH + 'api/docs/', SpectacularRapiDocView.as_view(url_name='schema'), name='docs'),
 ]
 
 if REST_EXPOSE_AUTH_API:

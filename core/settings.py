@@ -94,6 +94,7 @@ INSTALLED_APPS = [
     'django_filters',
     'django_celery_beat',
     'corsheaders',
+    'drf_spectacular',
 
     # Local apps
     'authentication',
@@ -211,7 +212,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_PAGINATION_CLASS': 'core.api.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 REST_EXPOSE_AUTH_API = getenv('DJANGO_REST_EXPOSE_AUTH_API', True)
@@ -303,3 +305,14 @@ LOGIN_URL = '/admin/login/'
 LOGIN_REDIRECT_URL = '/'
 
 LOGOUT_REDIRECT_URL = '/'
+
+
+# Spectacular
+# https://drf-spectacular.readthedocs.io/en/latest/settings.html
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Grigory API',
+    'DESCRIPTION': 'API for grigory',
+    'VERSION': '0.8.4',
+    'SERVE_INCLUDE_SCHEMA': True
+}

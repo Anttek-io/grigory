@@ -12,7 +12,7 @@ class MessageSerializer(serializers.ModelSerializer):
     attachments = AttachmentSerializer(many=True, required=False)
 
     def get_chat_queryset(self):
-        if self.context.get('request'):
+        if self.context.get('request') and self.context['request'].user.is_authenticated:
             return Chat.objects.filter(members__user=self.context['request'].user)
         return Chat.objects.none()
 

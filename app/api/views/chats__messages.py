@@ -16,6 +16,7 @@ class MessagesViewSet(viewsets.ModelViewSet):
     model = Message
     serializer_class = MessageSerializer
     permission_classes = (permissions.IsAuthenticated, IsChatMember)
+    queryset = model.objects.none()
 
     def get_queryset(self):
         chat_id = self.kwargs.get('chat_id')

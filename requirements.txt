@@ -29,3 +29,6 @@ channels_redis
 
 # Redis - needed both for channels and celery
 django-redis==5.2.0
+
+# Documentation
+drf-spectacular==0.26.2

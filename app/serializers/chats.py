@@ -24,7 +24,7 @@ class ChatSerializer(BaseSerializer):
 class ChatListSerializer(ChatSerializer):
     last_message = serializers.SerializerMethodField(read_only=True)
 
-    def get_last_message(self, obj):
+    def get_last_message(self, obj) -> dict or None:
         if obj.last_message:
             from app.serializers.messages import MessageWithoutChatSerializer
             return MessageWithoutChatSerializer(obj.last_message).data

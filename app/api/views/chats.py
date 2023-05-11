@@ -7,6 +7,7 @@ from app.serializers.chats import ChatSerializer, ChatListSerializer
 class ChatsViewSet(viewsets.ModelViewSet):
     model = Chat
     serializer_class = ChatSerializer
+    queryset = model.objects.none()
 
     def get_serializer_class(self):
         if self.action == 'list':

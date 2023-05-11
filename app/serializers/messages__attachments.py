@@ -10,7 +10,7 @@ class AttachmentSerializer(serializers.ModelSerializer):
 
     url = serializers.SerializerMethodField()
 
-    def get_url(self, obj):
+    def get_url(self, obj) -> str:
         return obj.file.url
 
     class Meta:
