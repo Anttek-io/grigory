@@ -45,6 +45,8 @@ services:
       replicas: 1
       restart_policy:
         condition: on-failure
+    volumes:
+      - redis_data:/data
   nginx:
     image: nginx:alpine
     <<: *common
@@ -172,5 +174,6 @@ networks:
 
 volumes:
   postgres_data:
+  redis_data:
   static:
   media:
